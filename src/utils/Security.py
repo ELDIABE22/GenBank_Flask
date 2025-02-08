@@ -25,9 +25,8 @@ class Security:
             if (len(encoded_token) > 0):
                 try:
                     payload = jwt.decode(encoded_token, cls.secret, algorithms=["HS256"])
-                    roles = list(payload['roles'])
 
-                    if 'Administrator' in roles:
+                    if payload['cc']:
                         return True
                     return False
                 except (jwt.ExpiredSignatureError, jwt.InvalidSignatureError):
