@@ -1,6 +1,19 @@
-class User:
+from datetime import date, datetime
 
-    def __init__(self, cc, first_name=None, last_name=None, birth_date=None, email=None, phone_number=None, department=None, city=None, address=None, address_details=None, password=None, created_at=None, updated_at=None):
+class User:
+    def __init__(self, cc: str, 
+                    first_name: str = None, 
+                    last_name: str = None, 
+                    birth_date: date = None,
+                    email: str = None, 
+                    phone_number: str = None, 
+                    department: str = None, 
+                    city: str = None, 
+                    address: str = None, 
+                    address_details: str = None, 
+                    password: str = None, 
+                    created_at: datetime = None,
+                    updated_at: datetime = None):
         self.cc = cc
         self.first_name = first_name
         self.last_name = last_name
