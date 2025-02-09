@@ -11,7 +11,7 @@ class Security:
     def generate_token(cls, authenticated_user):
         payload = {
             'iat': datetime.datetime.now(tz=cls.tz),
-            'exp': datetime.datetime.now(tz=cls.tz) + datetime.timedelta(minutes=10),
+            'exp': datetime.datetime.now(tz=cls.tz) + datetime.timedelta(hours=1),
             'cc': authenticated_user.cc
         }
         return jwt.encode(payload, cls.secret, algorithm="HS256")

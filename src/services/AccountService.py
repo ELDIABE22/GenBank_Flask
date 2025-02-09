@@ -48,21 +48,3 @@ class AccountService():
             return message
         except Exception as ex:
             raise Exception(f"Error al generar la cuenta corriente: {ex}")
-        
-    @classmethod
-    def deposit_service(cls, deposit):
-        try:
-            connection = get_db_connection()
-
-            with connection.cursor() as cursor:
-                cursor.callproc("sp_deposit", (deposit.account, deposit.amount, None))
-
-                cursor.execute("SELECT @p_message;")
-                message = cursor.fetchone()[0]
-
-            connection.commit()
-            connection.close()
-
-            return message
-        except Exception as ex:
-            raise Exception(f"Error al depositar en la cuenta: {ex}")   

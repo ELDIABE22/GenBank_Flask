@@ -14,28 +14,45 @@ CREATE TABLE Users (
     address_details TEXT,
     password VARCHAR(255) NOT NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX idx_email (email),
+    INDEX idx_phone_number (phone_number)
 );
 
 CREATE TABLE accounts (
-	account_number CHAR(16) UNIQUE,
-    user CHAR(10),
+    account_number CHAR(16) UNIQUE,
+    user CHAR(10) NOT NULL,
     balance DECIMAL(10,2) NOT NULL DEFAULT 0.00,
     expiration_date CHAR(5) NOT NULL,
     cvv CHAR(3) NOT NULL,
     account_type ENUM('Ahorros', 'Corriente') DEFAULT 'Ahorros',
     state ENUM('Activa', 'Inactiva') DEFAULT 'Activa',
     PRIMARY KEY (user, account_type),
-    FOREIGN KEY (user) REFERENCES users(cc)
+    FOREIGN KEY (user) REFERENCES users(cc),
+    INDEX idx_user (user)
+);
+
+CREATE TABLE transactions (
+	id INT AUTO_INCREMENT PRIMARY KEY,
+    from_account CHAR(16) NOT NULL,
+    to_account CHAR(16) NOT NULL,
+    amount DECIMAL(10,2) NOT NULL,
+    date DATETIME NOT NULL,
+    state ENUM('Pendiente', 'Exitoso', 'Fallido') DEFAULT 'Pendiente',
+    FOREIGN KEY (from_account) REFERENCES accounts(account_number),
+    FOREIGN KEY (to_account) REFERENCES accounts(account_number),
+    INDEX idx_from_account (from_account),
+    INDEX idx_to_account (to_account)
 );
 
 CREATE TABLE deposits (
-	id INT AUTO_INCREMENT PRIMARY KEY,
+    id INT AUTO_INCREMENT PRIMARY KEY,
     account CHAR(16) NOT NULL,
     amount DECIMAL(10,2) NOT NULL,
     date DATETIME NOT NULL,
     state ENUM('Exitoso', 'Fallido') NOT NULL,
-    FOREIGN KEY (account) REFERENCES accounts(account_number)
+    FOREIGN KEY (account) REFERENCES accounts(account_number),
+    INDEX idx_account (account)
 );	
 
 DELIMITER $$
@@ -118,6 +135,47 @@ BEGIN
     SET @p_message = p_message;
 END $$
 
+-- Procedimiento almacenado para hacer una transferencia
+CREATE PROCEDURE sp_transaction (
+	IN p_from_account CHAR(16),
+    IN p_to_account CHAR(16),
+    IN p_amount DECIMAL(10,2),
+    OUT p_message VARCHAR(255)
+)
+BEGIN
+	-- Verificar que exista la cuenta de origen
+	IF NOT EXISTS (SELECT 1 FROM accounts WHERE account_number = p_from_account) THEN
+        SET p_message = 'No se encontró la cuenta de origen. Verifica los datos e inténtalo nuevamente.';
+        
+	-- Verificar que la cuenta de origen no sea la misma que la de destino
+    ELSEIF (p_from_account = p_to_account) THEN
+        SET p_message = 'No puedes realizar una transferencia a tu propia cuenta.';
+	
+    -- Verificar que exista la cuenta de destino
+    ELSEIF NOT EXISTS (SELECT 1 FROM accounts WHERE account_number = p_to_account) THEN
+        SET p_message = 'La cuenta de destino no existe. Verifica el número de cuenta antes de proceder.';
+    
+    -- Verificar que la cuenta de origen tenga fondos suficientes   
+	ELSEIF (SELECT balance FROM accounts WHERE account_number = p_from_account) < p_amount THEN
+        SET p_message = 'Fondos insuficientes en la cuenta.';
+
+	ELSE 
+        -- Actualizar saldo de la cuenta de origen
+        UPDATE accounts SET balance = balance - p_amount WHERE account_number = p_from_account;
+
+        -- Actualizar saldo de la cuenta de destino
+        UPDATE accounts SET balance = balance + p_amount WHERE account_number = p_to_account;
+    
+        -- Insertar la transacción en la tabla de transacciones
+        INSERT INTO transactions (from_account, to_account, amount, date, state)
+            VALUES (p_from_account, p_to_account, p_amount, NOW(), 'Exitoso');
+            
+		SET p_message = 'Transferencia realizada con éxito.';
+	END IF;
+    
+    SET @p_message = p_message;
+END $$
+
 -- Procedimiento almacenado para hacer un deposito
 CREATE PROCEDURE sp_deposit (
 	IN p_account CHAR(16),
@@ -158,6 +216,33 @@ BEGIN
         END IF;
     END WHILE;
 END $$
+
+-- Vista para mostrar transacciones de una cuenta
+CREATE VIEW vw_account_transactions AS
+    SELECT
+        id,
+        'Gasto' AS tipo,
+        from_account AS cuenta,
+        amount,
+        date,
+        state
+    FROM 
+        transactions
+    UNION ALL
+    SELECT
+        id,
+        'Ingreso' AS tipo,
+        to_account AS cuenta,
+        amount,
+        date,
+        state
+    FROM 
+        transactions
+    ORDER BY 
+        date;
+
+-- Ejemplo de uso de la vista
+-- SELECT * FROM vw_account_transactions WHERE cuenta = '0532874707628856';
 
 -- Trigger para generar detalles de cuenta automáticamente
 CREATE TRIGGER create_bank_account_after_user_insert
