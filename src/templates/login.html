@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GenBank - Agregar Usuario</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='dist/css/output.css') }}">
+</head>
+
+<body>
+    <header>
+        <h1>GenBank</h1>
+    </header>
+
+    <main>
+        <section>
+            <h2>Iniciar Sesión</h2>
+            <form id="form-login">
+                <input id="cc" type="cc" name="cc" placeholder="CC" required>
+                <input id="password" type="password" name="password" placeholder="*********" required>
+                <button type="submit">Iniciar</button>
+            </form>
+        </section>
+    </main>
+
+    <script src="{{ url_for('static', filename='js/login.js')}}"></script>
+</body>
+</html>
