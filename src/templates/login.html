@@ -1,29 +1,136 @@
 <!DOCTYPE html>
 <html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GenBank - Iniciar Sesión</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='dist/css/output.css') }}"
+    />
+  </head>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GenBank - Agregar Usuario</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='dist/css/output.css') }}">
-</head>
+  <body>
+    <section
+      class="flex flex-col lg:flex-row items-center lg:items-stretch h-screen overflow-hidden"
+    >
+      <!-- Parte izquierda -->
+      <div
+        class="gradient h-[35%] lg:h-screen w-full lg:w-[50%] flex flex-col justify-center items-center gap-7 rounded-bl-[5rem] rounded-br-[5rem] lg:rounded-bl-none lg:rounded-tr-[5rem] text-white"
+      >
+        <h1 class="text-2xl sm:text-4xl font-bold">¡Bienvenido de nuevo!</h1>
+        <p class="text-gray-300 text-sm sm:text-base">¿No tengo una cuenta?</p>
+        <a href="/auth/register">
+          <button class="animated-button">
+            <svg
+              viewBox="0 0 24 24"
+              class="arr-2"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M16.1716 10.9999L10.8076 5.63589L12.2218 4.22168L20 11.9999L12.2218 19.778L10.8076 18.3638L16.1716 12.9999H4V10.9999H16.1716Z"
+              ></path>
+            </svg>
+            <span class="text">Registrarse</span>
+            <span class="circle"></span>
+            <svg
+              viewBox="0 0 24 24"
+              class="arr-1"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M16.1716 10.9999L10.8076 5.63589L12.2218 4.22168L20 11.9999L12.2218 19.778L10.8076 18.3638L16.1716 12.9999H4V10.9999H16.1716Z"
+              ></path>
+            </svg>
+          </button>
+        </a>
+      </div>
 
-<body>
-    <header>
-        <h1>GenBank</h1>
-    </header>
+      <!-- Parte derecha -->
+      <div class="h-full w-[80%] lg:w-[50%] px-0 py-5 lg:px-7">
+        <h1
+          class="text-center text-[#0047a3] text-2xl font-medium mb-10 lg:mb-0"
+        >
+          GenBank
+        </h1>
+        <div class="flex flex-col items-center justify-center h-full">
+          <h2 class="text-4xl font-bold mb-10 gradient-text">Iniciar Sesión</h2>
+          <form
+            id="form-login"
+            class="w-full flex flex-col gap-y-5 max-w-[500px]"
+          >
+            <div class="input-container">
+              <input
+                id="cc"
+                name="cc"
+                type="text"
+                placeholder="Cédula de Ciudadanía"
+                class="input"
+                required
+              />
+              <div class="icon">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="32"
+                  height="32"
+                  fill="#6b7280"
+                  viewBox="0 0 256 256"
+                >
+                  <path
+                    d="M200,112a8,8,0,0,1-8,8H152a8,8,0,0,1,0-16h40A8,8,0,0,1,200,112Zm-8,24H152a8,8,0,0,0,0,16h40a8,8,0,0,0,0-16Zm40-80V200a16,16,0,0,1-16,16H40a16,16,0,0,1-16-16V56A16,16,0,0,1,40,40H216A16,16,0,0,1,232,56ZM216,200V56H40V200H216Zm-80.26-34a8,8,0,1,1-15.5,4c-2.63-10.26-13.06-18-24.25-18s-21.61,7.74-24.25,18a8,8,0,1,1-15.5-4,39.84,39.84,0,0,1,17.19-23.34,32,32,0,1,1,45.12,0A39.76,39.76,0,0,1,135.75,166ZM96,136a16,16,0,1,0-16-16A16,16,0,0,0,96,136Z"
+                  ></path>
+                </svg>
+              </div>
+            </div>
 
-    <main>
-        <section>
-            <h2>Iniciar Sesión</h2>
-            <form id="form-login">
-                <input id="cc" type="cc" name="cc" placeholder="CC" required>
-                <input id="password" type="password" name="password" placeholder="*********" required>
-                <button type="submit">Iniciar</button>
-            </form>
-        </section>
-    </main>
+            <div class="input-container">
+              <input
+                id="password"
+                name="password"
+                type="password"
+                placeholder="Contraseña"
+                class="input"
+                required
+              />
+              <div id="eye" class="icon cursor-pointer">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="32"
+                  height="32"
+                  fill="#6b7280"
+                  viewBox="0 0 256 256"
+                >
+                  <path
+                    d="M247.31,124.76c-.35-.79-8.82-19.58-27.65-38.41C194.57,61.26,162.88,48,128,48S61.43,61.26,36.34,86.35C17.51,105.18,9,124,8.69,124.76a8,8,0,0,0,0,6.5c.35.79,8.82,19.57,27.65,38.4C61.43,194.74,93.12,208,128,208s66.57-13.26,91.66-38.34c18.83-18.83,27.3-37.61,27.65-38.4A8,8,0,0,0,247.31,124.76ZM128,192c-30.78,0-57.67-11.19-79.93-33.25A133.47,133.47,0,0,1,25,128,133.33,133.33,0,0,1,48.07,97.25C70.33,75.19,97.22,64,128,64s57.67,11.19,79.93,33.25A133.46,133.46,0,0,1,231.05,128C223.84,141.46,192.43,192,128,192Zm0-112a48,48,0,1,0,48,48A48.05,48.05,0,0,0,128,80Zm0,80a32,32,0,1,1,32-32A32,32,0,0,1,128,160Z"
+                  ></path>
+                </svg>
+              </div>
+            </div>
 
-    <script src="{{ url_for('static', filename='js/login.js')}}"></script>
-</body>
+            <p
+              class="w-fit mx-auto text-center text-sm text-gray-500 cursor-pointer transition-all duration-300 hover:text-gray-700 hover:underline hover:scale-105"
+            >
+              ¿Has olvidado tu contraseña?
+            </p>
+
+            <button type="submit" id="btn_login" class="btn">
+              <div class="loader_button"></div>
+              <span>Iniciar Sesión</span>
+            </button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <script src="https://unpkg.com/just-validate@latest/dist/just-validate.production.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js"></script>
+    <script
+      type="module"
+      src="{{ url_for('static', filename='js/login.js')}}"
+    ></script>
+  </body>
 </html>

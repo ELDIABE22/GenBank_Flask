@@ -3,8 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "type": "module",
   "scripts": {
-    "tailwind": "npx tailwindcss -i ./src/static/css/tailwind.css -o ./src/static/dist/css/output.css --watch"
+    "tailwind": "npx tailwindcss -i ./src/static/css/index.css -o ./src/static/dist/css/output.css --watch"
   },
   "repository": {
     "type": "git",
