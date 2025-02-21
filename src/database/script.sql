@@ -28,7 +28,7 @@ CREATE TABLE accounts (
     account_type ENUM('Ahorros', 'Corriente') DEFAULT 'Ahorros',
     state ENUM('Activa', 'Inactiva') DEFAULT 'Activa',
     PRIMARY KEY (user, account_type),
-    FOREIGN KEY (user) REFERENCES users(cc),
+    FOREIGN KEY (user) REFERENCES users(cc) ON DELETE CASCADE,
     INDEX idx_user (user)
 );
 
@@ -39,8 +39,8 @@ CREATE TABLE transactions (
     amount DECIMAL(10,2) NOT NULL,
     date DATETIME NOT NULL,
     state ENUM('Pendiente', 'Exitoso', 'Fallido') DEFAULT 'Pendiente',
-    FOREIGN KEY (from_account) REFERENCES accounts(account_number),
-    FOREIGN KEY (to_account) REFERENCES accounts(account_number),
+    FOREIGN KEY (from_account) REFERENCES accounts(account_number) ON DELETE SET NULL,
+    FOREIGN KEY (to_account) REFERENCES accounts(account_number) ON DELETE SET NULL,
     INDEX idx_from_account (from_account),
     INDEX idx_to_account (to_account)
 );
@@ -51,7 +51,7 @@ CREATE TABLE deposits (
     amount DECIMAL(10,2) NOT NULL,
     date DATETIME NOT NULL,
     state ENUM('Exitoso', 'Fallido') NOT NULL,
-    FOREIGN KEY (account) REFERENCES accounts(account_number),
+    FOREIGN KEY (account) REFERENCES accounts(account_number) ON DELETE SET NULL,
     INDEX idx_account (account)
 );	
 

@@ -1,49 +1,14 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>GenBank - Panel</title>
-    <link
-      rel="stylesheet"
-      href="{{ url_for('static', filename='dist/css/output.css') }}"
-    />
-  </head>
-  <body>
-    <body
-      class="flex flex-col justify-center items-center h-screen gradient gap-10"
-    >
-      <h1 id="title_dashboard" class="text-5xl font-bold text-white">
-        Bienvenido al Panel
-      </h1>
-
-      <button id="btn_logout" class="animated-button">
-        <svg
-          viewBox="0 0 24 24"
-          class="arr-2"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M16.1716 10.9999L10.8076 5.63589L12.2218 4.22168L20 11.9999L12.2218 19.778L10.8076 18.3638L16.1716 12.9999H4V10.9999H16.1716Z"
-          ></path>
-        </svg>
-        <span class="text">Cerrar Sesión</span>
-        <span class="circle"></span>
-        <svg
-          viewBox="0 0 24 24"
-          class="arr-1"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M16.1716 10.9999L10.8076 5.63589L12.2218 4.22168L20 11.9999L12.2218 19.778L10.8076 18.3638L16.1716 12.9999H4V10.9999H16.1716Z"
-          ></path>
-        </svg>
-      </button>
-    </body>
-
-    <script
-      type="module"
-      src="{{ url_for('static', filename='js/dashboard.js')}}"
-    ></script>
-  </body>
-</html>
+{% extends 'dashboardBase.html' %}
+<!-- Título -->
+{% block title %} Panel {% endblock %}
+<!-- Contenido -->
+{% block content %}
+<div>
+  <h2 class="text-4xl font-semibold">
+    Bienvenido, <span class="gradient-text">Jerónimo</span>
+  </h2>
+  <p class="text-sm text-slate-500">
+    Administre su cuenta y transacciones de manera fácil y eficiente.
+  </p>
+</div>
+{% endblock %}

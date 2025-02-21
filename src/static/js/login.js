@@ -7,6 +7,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const eyeIcon = document.getElementById('eye');
   const btn_login = document.getElementById('btn_login');
 
+  // Hace visible el contenido con una transición suave
+  document.body.style.opacity = '1';
+
   const validate = new window.JustValidate(form);
   const notyf = new window.Notyf();
 

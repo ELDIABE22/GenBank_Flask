@@ -11,6 +11,7 @@ export const verificarAutenticacion = () => {
   const token = getCookie('token');
   if (!token) {
     window.location.href = '/auth/login';
+    localStorage.removeItem('userData');
   }
 };
 
@@ -19,3 +20,5 @@ export const logout = () => {
   localStorage.removeItem('userData');
   window.location.href = '/';
 };
+
+verificarAutenticacion();

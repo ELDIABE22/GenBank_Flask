@@ -15,6 +15,7 @@
   font-family: 'Poppins', serif;
 }
 
+/* Estilos para el fondo con degradados radiales dinámicos */
 .gradient {
   --x-0: 93%;
   --c-0: hsla(217.59493670886076, 100%, 30%, 1);
@@ -102,6 +103,7 @@
     normal, normal, normal;
 }
 
+/* Estilo para aplicar un degradado en el texto */
 .gradient-text {
   background: linear-gradient(
     to right,
@@ -114,6 +116,12 @@
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
+}
+
+/* Clase para aplicar una animación de aparición gradual */
+.fade-in {
+  opacity: 0;
+  transition: opacity 0.8s ease-in-out;
 }
 
 .animated-button {

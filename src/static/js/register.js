@@ -27,6 +27,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const loader = document.getElementById('loader');
   const section_register = document.getElementById('section_register');
 
+  // Hace visible el contenido con una transición suave
+  document.body.style.opacity = '1';
+
   let step = 1;
 
   let isPasswordVisible = false;
