@@ -3,12 +3,217 @@
 {% block title %} Panel {% endblock %}
 <!-- Contenido -->
 {% block content %}
-<div>
-  <h2 class="text-4xl font-semibold">
-    Bienvenido, <span class="gradient-text">Jerónimo</span>
-  </h2>
-  <p class="text-sm text-slate-500">
-    Administre su cuenta y transacciones de manera fácil y eficiente.
-  </p>
+<div id="loader" class="loader"></div>
+
+<div class="flex justify-between">
+  <!-- Sección Izquierda -->
+  <div class="p-12 w-full space-y-8">
+    <!-- Icono open sidebar -->
+    <svg
+      id="sidebar-open"
+      xmlns="http://www.w3.org/2000/svg"
+      width="32"
+      height="32"
+      fill="#080808"
+      viewBox="0 0 256 256"
+      class="cursor-pointer hidden"
+    >
+      <path
+        d="M224,128a8,8,0,0,1-8,8H40a8,8,0,0,1,0-16H216A8,8,0,0,1,224,128ZM40,72H216a8,8,0,0,0,0-16H40a8,8,0,0,0,0,16ZM216,184H40a8,8,0,0,0,0,16H216a8,8,0,0,0,0-16Z"
+      ></path>
+    </svg>
+
+    <!-- Sección de bienvenida -->
+    <section>
+      <h2 class="text-4xl font-semibold">
+        Bienvenido, <span class="gradient-text">Jerónimo</span>
+      </h2>
+      <p class="text-sm text-slate-500">
+        Administre su cuenta y transacciones de manera fácil y eficiente.
+      </p>
+    </section>
+
+    <!-- Sección balance de la cuenta -->
+    <section class="flex max-w-6xl gap-x-5 p-6 rounded-xl border shadow-lg">
+      <!-- Contenedor del gráfico -->
+      <div class="w-[140px] h-[140px]">
+        <canvas id="doughnutChart"></canvas>
+      </div>
+
+      <div class="w-full flex justify-between items-center">
+        <div class="h-full flex flex-col justify-between gap-y-6">
+          <p class="font-medium">2 Cuentas Bancarias</p>
+          <div>
+            <p class="text-sm text-slate-500">Saldo Corriente Total</p>
+            <span id="balance" class="font-bold text-3xl gradient-text"></span>
+          </div>
+        </div>
+
+        <img
+          src="{{ url_for('static', filename='images/creditCard.gif') }}"
+          alt="pay"
+        />
+      </div>
+    </section>
+
+    <!-- Sección tabla de transacciones recientes -->
+    <section class="space-y-8">
+      <div class="flex justify-between items-center">
+        <p class="text-2xl font-bold">Transacciones recientes</p>
+        <button class="btn outline outline-none max-w-[130px] shadow-md">
+          Ver todos
+        </button>
+      </div>
+
+      <!-- Tabla -->
+      <div class="w-full max-w-6xl mx-auto">
+        <table id="table-transaction" class="w-full rounded-lg text-left">
+          <thead class="bg-[#0047a3] text-white">
+            <tr>
+              <th class="py-3 px-4">ID</th>
+              <th class="py-3 px-4">Nombre</th>
+              <th class="py-3 px-4">Edad</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <!-- Sección Derecha -->
+  <aside class="w-full max-w-[400px] h-screen bg-white border-l">
+    <!-- Perfil -->
+    <div class="relative">
+      <div class="gradient w-full h-[150px]"></div>
+      <div class="absolute top-20 w-full p-6 space-y-5">
+        <div
+          class="w-1 h-1 p-14 rounded-full border-4 border-white shadow-lg shadow-black/30 bg-white"
+        ></div>
+        <div>
+          <p class="font-semibold text-2xl text-[#3a1f54] mb-2">
+            Jerónimo Sánchez
+          </p>
+          <p class="text-slate-500 text-sm">jeronimo.jsa.133@gmail.com</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tarjetas -->
+    <div class="p-6 mt-40 space-y-8">
+      <div class="flex justify-between items-center">
+        <h2 class="font-semibold text-lg">Mis cuentas</h2>
+        <span
+          class="text-[#3a1f54] text-sm cursor-pointer hover:text-[#3a1f54c0]"
+          >+ Agregar cuenta</span
+        >
+      </div>
+
+      <div
+        class="relative flex flex-1 flex-col items-center justify-center gap-5"
+      >
+        <!-- Tarjeta 1 -->
+        <div class="relative z-10">
+          <div class="flex w-[316px] h-[190px]">
+            <div
+              class="relative w-[75%] h-full flex flex-col justify-between bg-[#3a1f54] rounded-l-[20px] p-5 z-20"
+            >
+              <div>
+                <h1 class="text-16 font-medium text-white">GenBank</h1>
+                <p class="font-medium text-white">$1.200.698</p>
+              </div>
+
+              <article class="flex flex-col gap-2">
+                <div class="flex justify-between">
+                  <h1 class="text-12 font-medium text-white">ELDIABE22</h1>
+                  <h2 class="text-12 font-medium text-white">●● / ●●</h2>
+                </div>
+                <p class="text-14 font-medium tracking-[1.5px] text-white">
+                  ●●●● ●●●● ●●●● <span class="text-16">1234</span>
+                </p>
+              </article>
+            </div>
+
+            <div
+              class="flex flex-col justify-between items-center bg-[#000000] h-full w-[25%] py-6 rounded-r-[20px]"
+            >
+              <img
+                src="{{ url_for('static', filename='images/Paypass.svg') }}"
+                alt="pay"
+                width="20"
+                height="24"
+              />
+              <img
+                src="{{ url_for('static', filename='images/visa.svg') }}"
+                alt="visa"
+                width="45"
+                height="32"
+              />
+            </div>
+            <img
+              src="{{ url_for('static', filename='images/lines.png') }}"
+              alt="lines"
+              width="316"
+              height="190"
+              class="absolute top-0 left-0 z-0"
+            />
+          </div>
+        </div>
+        <!-- Tarjeta 2 -->
+        <div class="absolute right-0 top-8 z-0 w-[90%]">
+          <div class="flex w-[316px] h-[190px]">
+            <div
+              class="relative w-[75%] h-full flex flex-col justify-between bg-[#0047a3] rounded-l-[20px] p-5 z-20"
+            >
+              <div>
+                <h1 class="text-16 font-medium text-white">GenBank</h1>
+                <p class="font-medium text-white">$1.200.698</p>
+              </div>
+
+              <article class="flex flex-col gap-2">
+                <div class="flex justify-between">
+                  <h1 class="text-12 font-medium text-white">ELDIABE22</h1>
+                  <h2 class="text-12 font-medium text-white">●● / ●●</h2>
+                </div>
+                <p class="text-14 font-medium tracking-[1.5px] text-white">
+                  ●●●● ●●●● ●●●● <span class="text-16">1234</span>
+                </p>
+              </article>
+            </div>
+
+            <div
+              class="flex flex-col justify-between items-center bg-[#002966] h-full w-[25%] py-6 rounded-r-[20px]"
+            >
+              <img
+                src="{{ url_for('static', filename='images/Paypass.svg') }}"
+                alt="pay"
+                width="20"
+                height="24"
+              />
+              <img
+                src="{{ url_for('static', filename='images/visa.svg') }}"
+                alt="visa"
+                width="45"
+                height="32"
+              />
+            </div>
+            <img
+              src="{{ url_for('static', filename='images/lines.png') }}"
+              alt="lines"
+              width="316"
+              height="190"
+              class="absolute top-0 left-0 z-0"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  </aside>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script
+  type="module"
+  src="{{ url_for('static', filename='js/dashboard.js')}}"
+></script>
 {% endblock %}

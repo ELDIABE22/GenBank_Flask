@@ -8,6 +8,14 @@
       rel="stylesheet"
       href="{{ url_for('static', filename='dist/css/output.css') }}"
     />
+
+    <!-- DataTables -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css"
+    />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
   </head>
   <body class="fade-in">
     <!-- Barra lateral -->
@@ -82,23 +90,8 @@
 
     <section
       id="content-dashboard"
-      class="p-12 ml-0 xl:ml-[280px] transition-all duration-300"
+      class="ml-0 xl:ml-[280px] transition-all duration-300"
     >
-      <!-- Icono open sidebar -->
-      <svg
-        id="sidebar-open"
-        xmlns="http://www.w3.org/2000/svg"
-        width="32"
-        height="32"
-        fill="#080808"
-        viewBox="0 0 256 256"
-        class="cursor-pointer hidden"
-      >
-        <path
-          d="M224,128a8,8,0,0,1-8,8H40a8,8,0,0,1,0-16H216A8,8,0,0,1,224,128ZM40,72H216a8,8,0,0,0,0-16H40a8,8,0,0,0,0,16ZM216,184H40a8,8,0,0,0,0,16H216a8,8,0,0,0,0-16Z"
-        ></path>
-      </svg>
-
       {% block content %}
       <!-- Contenido del panel -->
       {% endblock %}

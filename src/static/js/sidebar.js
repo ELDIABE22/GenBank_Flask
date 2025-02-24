@@ -16,7 +16,6 @@ document.addEventListener('DOMContentLoaded', () => {
   // Botón activo
   buttons.forEach((button) => {
     const buttonPath = button.getAttribute('data-path');
-    console.log(buttonPath);
 
     if (currentPath === buttonPath) {
       button.classList.remove('outline');
