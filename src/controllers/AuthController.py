@@ -6,7 +6,6 @@ from src.models.User import User
 # Security
 from src.utils.Security import Security
 # Services
-from src.services.AccountService import AccountService
 from src.services.AuthService import AuthService
 
 main = Blueprint('auth_blueprint', __name__)
@@ -20,7 +19,6 @@ def login():
     authenticated_user = AuthService.login_user(_user)   
 
     if authenticated_user:
-        accounts = AccountService.accounts_by_user_service(authenticated_user.cc)
         userData = {
             'cc': authenticated_user.cc,
             'first_name': authenticated_user.first_name,
@@ -32,7 +30,6 @@ def login():
             'city': authenticated_user.city,
             'address': authenticated_user.address,
             'address_details': authenticated_user.address_details,
-            'accounts': [account.__dict__ for account in accounts]
         }
         
         token = Security.generate_token(authenticated_user)

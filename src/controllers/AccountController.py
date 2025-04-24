@@ -21,3 +21,14 @@ def account_current_controller():
             return jsonify({'message': message}), 400
     else:
         return jsonify({'message': '¡Error de autenticación, inicie sesión!'}), 401
+
+@main.route('/currents/<cc>', methods=['GET'])
+def accounts_by_user_controller(cc):
+    has_access = Security.verify_token(request.headers)
+
+    if has_access:
+        accounts = AccountService.accounts_by_user_service(cc)
+
+        return jsonify([account.__dict__ for account in accounts]), 200
+    else:
+        return jsonify({'message': '¡Error de autenticación, inicie sesión!'}), 401 
