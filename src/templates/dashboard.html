@@ -5,9 +5,9 @@
 {% block content %}
 <div id="loader" class="loader"></div>
 
-<div class="flex justify-between">
+<div id="section-dashboard" class="flex justify-between">
   <!-- Sección Izquierda -->
-  <div class="p-12 w-full space-y-8">
+  <div class="p-10 w-full space-y-8">
     <!-- Icono open sidebar -->
     <svg
       id="sidebar-open"
@@ -25,24 +25,29 @@
 
     <!-- Sección de bienvenida -->
     <section>
-      <h2 class="text-4xl font-semibold">
-        Bienvenido, <span class="gradient-text">Jerónimo</span>
+      <h2 class="text-2xl sm:text-4xl font-semibold">
+        Bienvenido,
+        <span id="welcome-name" class="gradient-text">Jerónimo</span>
       </h2>
-      <p class="text-sm text-slate-500">
+      <p class="text-xs sm:text-sm text-slate-500">
         Administre su cuenta y transacciones de manera fácil y eficiente.
       </p>
     </section>
 
     <!-- Sección balance de la cuenta -->
-    <section class="flex max-w-6xl gap-x-5 p-6 rounded-xl border shadow-lg">
+    <section
+      class="flex justify-center max-w-6xl gap-x-5 p-6 rounded-xl border shadow-lg"
+    >
       <!-- Contenedor del gráfico -->
-      <div class="w-[140px] h-[140px]">
+      <div class="w-[240px] h-[140px]">
         <canvas id="doughnutChart"></canvas>
       </div>
 
       <div class="w-full flex justify-between items-center">
         <div class="h-full flex flex-col justify-between gap-y-6">
-          <p class="font-medium">2 Cuentas Bancarias</p>
+          <p id="bank-accounts-number" class="font-medium">
+            0 Cuentas Bancarias
+          </p>
           <div>
             <p class="text-sm text-slate-500">Saldo Corriente Total</p>
             <span id="balance" class="font-bold text-3xl gradient-text"></span>
@@ -52,6 +57,7 @@
         <img
           src="{{ url_for('static', filename='images/creditCard.gif') }}"
           alt="pay"
+          class="hidden sm:inline"
         />
       </div>
     </section>
@@ -59,7 +65,7 @@
     <!-- Sección tabla de transacciones recientes -->
     <section class="space-y-8">
       <div class="flex justify-between items-center">
-        <p class="text-2xl font-bold">Transacciones recientes</p>
+        <p class="text-xl sm:text-2xl font-bold">Transacciones recientes</p>
         <button class="btn outline outline-none max-w-[130px] shadow-md">
           Ver todos
         </button>
@@ -70,9 +76,10 @@
         <table id="table-transaction" class="w-full rounded-lg text-left">
           <thead class="bg-[#0047a3] text-white">
             <tr>
-              <th class="py-3 px-4">ID</th>
-              <th class="py-3 px-4">Nombre</th>
-              <th class="py-3 px-4">Edad</th>
+              <th class="py-3 px-4">Cuenta</th>
+              <th class="py-3 px-4">Cantidad</th>
+              <th class="py-3 px-4">Estado</th>
+              <th class="py-3 px-4">Fecha</th>
             </tr>
           </thead>
           <tbody></tbody>
@@ -82,19 +89,50 @@
   </div>
 
   <!-- Sección Derecha -->
-  <aside class="w-full max-w-[400px] h-screen bg-white border-l">
+  <aside
+    class="hidden lg:block w-full max-w-[400px] h-screen bg-white border-l"
+  >
     <!-- Perfil -->
     <div class="relative">
       <div class="gradient w-full h-[150px]"></div>
       <div class="absolute top-20 w-full p-6 space-y-5">
+        <!-- Foto de perfil -->
         <div
-          class="w-1 h-1 p-14 rounded-full border-4 border-white shadow-lg shadow-black/30 bg-white"
-        ></div>
+          class="w-32 h-32 rounded-full border-4 border-white shadow-lg shadow-black/30 bg-white"
+        >
+          <img
+            src="https://cdn-icons-png.flaticon.com/512/4715/4715330.png"
+            alt="user-profile"
+            class="w-full h-full object-cover"
+          />
+        </div>
+
+        <!-- Icono sign-out -->
+        <div class="absolute top-[70px] right-5">
+          <svg
+            id="sign-out"
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            fill="#c60017"
+            viewBox="0 0 256 256"
+            class="cursor-pointer hover:scale-110 transform duration-300 active:scale-90"
+          >
+            <path
+              d="M120,216a8,8,0,0,1-8,8H48a8,8,0,0,1-8-8V40a8,8,0,0,1,8-8h64a8,8,0,0,1,0,16H56V208h56A8,8,0,0,1,120,216Zm109.66-93.66-40-40a8,8,0,0,0-11.32,11.32L204.69,120H112a8,8,0,0,0,0,16h92.69l-26.35,26.34a8,8,0,0,0,11.32,11.32l40-40A8,8,0,0,0,229.66,122.34Z"
+            ></path>
+          </svg>
+        </div>
+
+        <!-- Datos del perfil -->
         <div>
-          <p class="font-semibold text-2xl text-[#3a1f54] mb-2">
-            Jerónimo Sánchez
+          <p
+            id="user-name-profile"
+            class="font-semibold text-2xl text-[#3a1f54] mb-2"
+          >
+            Usuario
           </p>
-          <p class="text-slate-500 text-sm">jeronimo.jsa.133@gmail.com</p>
+          <p id="user-cc-profile" class="text-slate-500 text-sm">########</p>
         </div>
       </div>
     </div>
@@ -104,6 +142,7 @@
       <div class="flex justify-between items-center">
         <h2 class="font-semibold text-lg">Mis cuentas</h2>
         <span
+          id="new-account"
           class="text-[#3a1f54] text-sm cursor-pointer hover:text-[#3a1f54c0]"
           >+ Agregar cuenta</span
         >
@@ -113,29 +152,45 @@
         class="relative flex flex-1 flex-col items-center justify-center gap-5"
       >
         <!-- Tarjeta 1 -->
-        <div class="relative z-10">
+        <div id="current-account" class="relative z-10">
           <div class="flex w-[316px] h-[190px]">
             <div
-              class="relative w-[75%] h-full flex flex-col justify-between bg-[#3a1f54] rounded-l-[20px] p-5 z-20"
+              class="relative w-[75%] h-full flex flex-col justify-between bg-[#0047a3] rounded-l-[20px] p-5 z-20"
             >
               <div>
-                <h1 class="text-16 font-medium text-white">GenBank</h1>
-                <p class="font-medium text-white">$1.200.698</p>
+                <h1 class="text-base font-medium text-white">GenBank</h1>
+                <p id="balance-ahorro" class="font-medium text-white">$ 0.00</p>
               </div>
 
               <article class="flex flex-col gap-2">
                 <div class="flex justify-between">
-                  <h1 class="text-12 font-medium text-white">ELDIABE22</h1>
-                  <h2 class="text-12 font-medium text-white">●● / ●●</h2>
+                  <h1
+                    id="account-type-ahorro"
+                    class="text-xs font-medium text-white"
+                  >
+                    Ahorro
+                  </h1>
+                  <h2
+                    id="expirate-ahorro"
+                    class="text-xs font-medium text-white"
+                  >
+                    ●● / ●●
+                  </h2>
                 </div>
-                <p class="text-14 font-medium tracking-[1.5px] text-white">
-                  ●●●● ●●●● ●●●● <span class="text-16">1234</span>
+                <p
+                  id="account-number-ahorro"
+                  class="text-[15px] font-medium tracking-[1.5px] text-white"
+                >
+                  ●●●● ●●●● ●●●●
+                  <span id="account-number-4-digits-ahorro" class="text-16"
+                    >●●●●</span
+                  >
                 </p>
               </article>
             </div>
 
             <div
-              class="flex flex-col justify-between items-center bg-[#000000] h-full w-[25%] py-6 rounded-r-[20px]"
+              class="flex flex-col justify-between items-center bg-[#002966] h-full w-[25%] py-6 rounded-r-[20px]"
             >
               <img
                 src="{{ url_for('static', filename='images/Paypass.svg') }}"
@@ -160,29 +215,45 @@
           </div>
         </div>
         <!-- Tarjeta 2 -->
-        <div class="absolute right-0 top-8 z-0 w-[90%]">
+        <div id="savings-account" class="absolute right-0 top-8 z-0 w-[90%]">
           <div class="flex w-[316px] h-[190px]">
             <div
-              class="relative w-[75%] h-full flex flex-col justify-between bg-[#0047a3] rounded-l-[20px] p-5 z-20"
+              class="relative w-[75%] h-full flex flex-col justify-between bg-[#3a1f54] rounded-l-[20px] p-5 z-20"
             >
               <div>
-                <h1 class="text-16 font-medium text-white">GenBank</h1>
-                <p class="font-medium text-white">$1.200.698</p>
+                <h1 class="font-medium text-white">GenBank</h1>
+                <p id="balance-corriente" class="font-medium text-white">
+                  $ 0.00
+                </p>
               </div>
 
               <article class="flex flex-col gap-2">
                 <div class="flex justify-between">
-                  <h1 class="text-12 font-medium text-white">ELDIABE22</h1>
-                  <h2 class="text-12 font-medium text-white">●● / ●●</h2>
+                  <h1
+                    id="account-type-corriente"
+                    class="text-xs font-medium text-white"
+                  >
+                    Corriente
+                  </h1>
+                  <h2
+                    id="expirate-corriente"
+                    class="text-xs font-medium text-white"
+                  >
+                    ●● / ●●
+                  </h2>
                 </div>
-                <p class="text-14 font-medium tracking-[1.5px] text-white">
-                  ●●●● ●●●● ●●●● <span class="text-16">1234</span>
+                <p
+                  id="account-number-corriente"
+                  class="text-[15px] font-medium tracking-[1.5px] text-white"
+                >
+                  ●●●● ●●●● ●●●●
+                  <span id="account-number-4-digits-corriente">●●●●</span>
                 </p>
               </article>
             </div>
 
             <div
-              class="flex flex-col justify-between items-center bg-[#002966] h-full w-[25%] py-6 rounded-r-[20px]"
+              class="flex flex-col justify-between items-center bg-[#000000] h-full w-[25%] py-6 rounded-r-[20px]"
             >
               <img
                 src="{{ url_for('static', filename='images/Paypass.svg') }}"

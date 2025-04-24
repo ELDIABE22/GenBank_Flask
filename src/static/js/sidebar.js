@@ -40,13 +40,17 @@ document.addEventListener('DOMContentLoaded', () => {
   sidebarOpen.addEventListener('click', () => {
     sidebar.classList.toggle('-translate-x-full');
     sidebarOpen.classList.replace('inline', 'hidden');
-    contentDashboard.classList.toggle('ml-[280px]');
+    if (window.innerWidth > 1280) {
+      contentDashboard.classList.toggle('ml-[280px]');
+    }
   });
 
   sidebarClose.addEventListener('click', () => {
     sidebar.classList.add('-translate-x-full');
     sidebarOpen.classList.replace('hidden', 'inline');
-    contentDashboard.classList.remove('ml-[280px]');
+    if (window.innerWidth > 1280) {
+      contentDashboard.classList.remove('ml-[280px]');
+    }
   });
 
   signOut.addEventListener('click', () => {
