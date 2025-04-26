@@ -4,12 +4,19 @@ document.addEventListener('DOMContentLoaded', () => {
   const newAccountBtn = document.getElementById('new-account');
   const savingsAccount = document.getElementById('savings-account');
   const currentAccount = document.getElementById('current-account');
+  const showCardDataAhorro = document.getElementById('show-card-data-ahorro');
+  const hideCardDataAhorro = document.getElementById('hide-card-data-ahorro');
+  const showCardDataCorriente = document.getElementById('show-card-data-corriente');
+  const hideCardDataCorriente = document.getElementById('hide-card-data-corriente');
 
   const balance = document.getElementById('balance');
 
   const ctx = document.getElementById('doughnutChart').getContext('2d');
 
   const userData = JSON.parse(localStorage.getItem('userData'));
+
+  let savingsAccountData;
+  let currentAccountData;
 
   // Nombres del perfil
   document.getElementById('user-name-profile').textContent =
@@ -57,12 +64,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
       // Datos de las tarjetas
       if (data.length === 1) {
-        const savingsAccountData = data.find(
+        savingsAccountData = data.find(
           (a) => a.account_type === 'Ahorros'
         );
 
-        const formattedAccountNumber =
-          savingsAccountData.account_number.replace(/(\d{4})(?=\d)/g, '$1 ');
         const formattedBalance = parseFloat(
           savingsAccountData.balance
         ).toLocaleString('es-CO', {
@@ -75,64 +80,44 @@ document.addEventListener('DOMContentLoaded', () => {
           formattedBalance;
         document.getElementById('account-type-ahorro').textContent =
           savingsAccountData.account_type;
-        // document.getElementById('expirate-ahorro').textContent =
-        //   savingsAccountData.expiration_date;
-        // document.getElementById('account-number-ahorro').textContent =
-        //   formattedAccountNumber;
         document.getElementById('account-number-4-digits-ahorro').textContent =
           lastFourDigits;
       } else if (data.length > 1) {
         currentAccount.classList.replace('hidden', 'block');
 
-        const savingsAccountData = data.find(
-          (a) => a.account_type === 'Ahorros'
-        );
-        const currentAccountData = data.find(
-          (a) => a.account_type === 'Corriente'
-        );
+        savingsAccountData = data.find((a) => a.account_type === 'Ahorros');
+        currentAccountData = data.find((a) => a.account_type === 'Corriente');
 
-        const formattedSavingsAccountNumber =
-          savingsAccountData.account_number.replace(/(\d{4})(?=\d)/g, '$1 ');
         const formattedSavingsBalance = parseFloat(
           savingsAccountData.balance
         ).toLocaleString('es-CO', {
           style: 'currency',
           currency: 'COP',
         });
-        const lastFourDigits1 = savingsAccountData.account_number.slice(-4);
+        const lastFourDigitsSavings = savingsAccountData.account_number.slice(-4);
 
-        const formattedCurrentAccountNumber =
-          currentAccountData.account_number.replace(/(\d{4})(?=\d)/g, '$1 ');
         const formattedCurrentBalance = parseFloat(
           currentAccountData.balance
         ).toLocaleString('es-CO', {
           style: 'currency',
           currency: 'COP',
         });
-        const lastFourDigits2 = currentAccountData.account_number.slice(-4);
+        const lastFourDigitsCurrent = currentAccountData.account_number.slice(-4);
 
         document.getElementById('balance-ahorro').textContent =
           formattedSavingsBalance;
         document.getElementById('account-type-ahorro').textContent =
           savingsAccountData.account_type;
-        // document.getElementById('expirate-ahorro').textContent =
-        //   savingsAccountData.expiration_date;
-        // document.getElementById('account-number-ahorro').textContent =
-        //   formattedsavingsAccountDataNumber;
         document.getElementById('account-number-4-digits-ahorro').textContent =
-          lastFourDigits1;
+          lastFourDigitsSavings;
 
         document.getElementById('balance-corriente').textContent =
           formattedCurrentBalance;
         document.getElementById('account-type-corriente').textContent =
           currentAccountData.account_type;
-        // document.getElementById('expirate-corriente').textContent =
-        //   currentAccountData.expiration_date;
-        // document.getElementById('account-number-corriente').textContent =
-        //   formattedcurrentAccountDataNumber;
         document.getElementById(
           'account-number-4-digits-corriente'
-        ).textContent = lastFourDigits2;
+        ).textContent = lastFourDigitsCurrent;
       }
 
       // Gráfico del saldo de las cuentas
@@ -174,6 +159,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
+  // Función para obtener las últimas 5 transacciones del usuario
   const fetchTransaction = async (account) => {
     try {
       const res = await fetch(`/api/v1/transaction/${account}/transactions`, {
@@ -253,6 +239,64 @@ document.addEventListener('DOMContentLoaded', () => {
   currentAccount.addEventListener('click', () =>
     toggleZIndex(currentAccount, savingsAccount)
   );
+
+  // Evento para mostrar los datos de la tarjeta de ahorros
+  showCardDataAhorro.addEventListener('click', () => {
+    showCardDataAhorro.classList.toggle('hidden');
+    hideCardDataAhorro.classList.replace('hidden', 'block');
+
+    const formattedSavingsAccountNumber =
+      savingsAccountData.account_number.replace(/(\d{4})(?=\d)/g, '$1 ');
+
+    document.getElementById('expirate-ahorro').textContent =
+      savingsAccountData.expiration_date;
+    document.getElementById('account-number-ahorro').textContent =
+      formattedSavingsAccountNumber;
+  });
+
+  // Evento para ocultar los datos de la tarjeta de ahorros
+  hideCardDataAhorro.addEventListener('click', () => {
+    hideCardDataAhorro.classList.replace('block', 'hidden');
+    showCardDataAhorro.classList.replace('hidden', 'block');
+
+    const lastFourDigits = savingsAccountData.account_number.slice(-4);
+
+    document.getElementById('account-number-ahorro').innerHTML = `
+        ●●●● ●●●● ●●●● 
+        <span id="account-number-4-digits-ahorro" class="text-16">${lastFourDigits}</span>
+      `;
+
+    document.getElementById('expirate-ahorro').textContent = '●● / ●●';
+  });
+
+  // Evento para mostrar los datos de la tarjeta corriente
+  showCardDataCorriente.addEventListener('click', () => {
+    showCardDataCorriente.classList.toggle('hidden');
+    hideCardDataCorriente.classList.replace('hidden', 'block');
+
+    const formattedCurrentAccountNumber =
+      currentAccountData.account_number.replace(/(\d{4})(?=\d)/g, '$1 ');
+
+    document.getElementById('expirate-corriente').textContent =
+      currentAccountData.expiration_date;
+    document.getElementById('account-number-corriente').textContent =
+      formattedCurrentAccountNumber;
+  });
+
+  // Evento para ocultar los datos de la tarjeta corriente
+  hideCardDataCorriente.addEventListener('click', () => {
+    hideCardDataCorriente.classList.replace('block', 'hidden');
+    showCardDataCorriente.classList.replace('hidden', 'block');
+
+    const lastFourDigits = currentAccountData.account_number.slice(-4);
+
+    document.getElementById('account-number-corriente').innerHTML = `
+        ●●●● ●●●● ●●●● 
+        <span id="account-number-4-digits-corriente" class="text-16">${lastFourDigits}</span>
+      `;
+
+    document.getElementById('expirate-corriente').textContent = '●● / ●●';
+  });
 
   fetchAccounts();
 });
