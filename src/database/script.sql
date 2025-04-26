@@ -221,8 +221,9 @@ END $$
 CREATE VIEW vw_account_transactions AS
     SELECT
         id,
-        'Gasto' AS tipo,
-        from_account AS cuenta,
+        'Gasto' AS type,
+        from_account AS account,
+        to_account AS related_account,
         amount,
         date,
         state
@@ -231,8 +232,9 @@ CREATE VIEW vw_account_transactions AS
     UNION ALL
     SELECT
         id,
-        'Ingreso' AS tipo,
-        to_account AS cuenta,
+        'Ingreso' AS type,
+        to_account AS account,
+        from_account AS related_account,
         amount,
         date,
         state

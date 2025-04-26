@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
 
 # Models
-from src.models.Transaction import Transaction, TransactionsSchema
+from src.models.Transaction import Transaction, TransactionsSchema, AccountTransactionSchema
 # Services
 from src.services.TransactionService import TransactionService
 # Security
@@ -9,6 +9,7 @@ from src.utils.Security import Security
 
 transaction_schema = TransactionsSchema()
 transactions_schema = TransactionsSchema(many=True)
+account_transactions_schema = AccountTransactionSchema(many=True)
 
 main = Blueprint('transaction_blueprint', __name__)
 
@@ -37,6 +38,6 @@ def account_transactions_controller(account):
 
     if has_access:
         result = TransactionService.account_transactions_service(account)
-        return jsonify(transactions_schema.dump(result)), 200
+        return jsonify(account_transactions_schema.dump(result)), 200
     else:
         return jsonify({'message': '¡Error de autenticación, inicie sesión!'}), 401

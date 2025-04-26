@@ -28,9 +28,9 @@ class TransactionService():
     def account_transactions_service(cls, account):
         try:
             transactions = db.session.execute(
-                text("SELECT * FROM vw_account_transactions WHERE cuenta = :account"),
+                text("SELECT * FROM vw_account_transactions WHERE account = :account"),
                 {'account': account}
-            ).fetchall()
+            ).mappings().all()
 
             return transactions
         except Exception as ex:

@@ -1,6 +1,7 @@
 from src.database.db import db, ma
 from sqlalchemy.dialects.mysql import ENUM
 from datetime import datetime
+from marshmallow import Schema, fields
 
 class Transaction(db.Model):
     __tablename__ = "transactions"
@@ -23,3 +24,12 @@ class TransactionsSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = Transaction
         load_instance = True
+
+class AccountTransactionSchema(Schema):
+    id = fields.Int()
+    type = fields.Str()
+    account = fields.Str()
+    related_account = fields.Str()
+    amount = fields.Decimal(as_string=True)
+    date = fields.DateTime()
+    state = fields.Str()
