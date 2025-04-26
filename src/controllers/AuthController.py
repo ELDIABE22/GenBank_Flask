@@ -2,11 +2,14 @@ from flask import Blueprint, request, jsonify
 import bcrypt
 
 # Models
-from src.models.User import User
+from src.models.User import User, UsersSchema
 # Security
 from src.utils.Security import Security
 # Services
 from src.services.AuthService import AuthService
+
+user_schema = UsersSchema()
+users_schema = UsersSchema(many=True)
 
 main = Blueprint('auth_blueprint', __name__)
 
@@ -19,25 +22,12 @@ def login():
     authenticated_user = AuthService.login_user(_user)   
 
     if authenticated_user:
-        userData = {
-            'cc': authenticated_user.cc,
-            'first_name': authenticated_user.first_name,
-            'last_name': authenticated_user.last_name,
-            'birth_date': authenticated_user.birth_date,
-            'email': authenticated_user.email,
-            'phone_number': authenticated_user.phone_number,
-            'department': authenticated_user.department,
-            'city': authenticated_user.city,
-            'address': authenticated_user.address,
-            'address_details': authenticated_user.address_details,
-        }
-        
         token = Security.generate_token(authenticated_user)
 
         return jsonify({
             'message': f"Inicio de sesión exitoso. Bienvenido, {authenticated_user.first_name}!",
             'token': token,
-            'user': userData
+            'user': user_schema.dump(authenticated_user)
             }), 200
     else:
         return jsonify({'message': "Credenciales incorrectas. Verifica tus datos."}), 401

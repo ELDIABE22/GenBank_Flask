@@ -1,27 +1,15 @@
-from src.database.db import get_db_connection
+from sqlalchemy import text
+from src.database.db import db
+
+# Models
+from src.models.Deposits import Deposit
 
 class DepositService():
     @classmethod
     def account_deposits_service(cls, deposit):
         try:
-            connection = get_db_connection()
-
-            with connection.cursor() as cursor:
-                cursor.execute("SELECT * FROM deposits WHERE account = %s ORDER BY date", (deposit.account,))
-                result = cursor.fetchall()
+            deposits = Deposit.query.filter_by(account=deposit.account).order_by(Deposit.date).all()
             
-            connection.close()
-
-            deposits = [
-                {
-                    "id": row[0],
-                    "account": row[1],
-                    "amount": row[2],
-                    "date": row[3].isoformat() + 'Z',
-                    "state": row[4]
-                } for row in result
-            ]
-
             return deposits
         except Exception as ex:
             raise Exception(f"Error al obtener los depósitos de la cuenta: {ex}")
@@ -29,16 +17,19 @@ class DepositService():
     @classmethod
     def deposit_service(cls, deposit):
         try:
-            connection = get_db_connection()
+            db.session.execute(text("""
+                CALL sp_deposit(
+                    :account, :amount, @p_message
+                )
+            """), {
+                'account': deposit.account,
+                'amount': deposit.amount
+            })
 
-            with connection.cursor() as cursor:
-                cursor.callproc("sp_deposit", (deposit.account, deposit.amount, None))
+            result = db.session.execute(text("SELECT @p_message"))
+            message = result.fetchone()[0]
 
-                cursor.execute("SELECT @p_message;")
-                message = cursor.fetchone()[0]
-
-            connection.commit()
-            connection.close()
+            db.session.commit()
 
             return message
         except Exception as ex:

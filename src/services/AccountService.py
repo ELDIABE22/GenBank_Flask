@@ -1,4 +1,5 @@
-from src.database.db import get_db_connection
+from src.database.db import db
+from sqlalchemy import text
 
 # Models
 from src.models.Account import Account
@@ -8,25 +9,14 @@ class AccountService():
     @classmethod
     def accounts_by_user_service(cls, cc):
         try:
-            connection = get_db_connection()
-            accounts = []
-            with connection.cursor() as cursor:
-                query = "SELECT account_number, account_type, balance, expiration_date, cvv FROM accounts WHERE user = %s"
-                cursor.execute(query, (cc))
-                rows = cursor.fetchall()
-                
-                for row in rows:
-                    account = Account(
-                        user=cc,
-                        account_type=row[1],
-                        balance=row[2],
-                        account_number=row[0],
-                        expiration_date=row[3],
-                        cvv=row[4]
-                    )
-                    accounts.append(account)
-            
-            connection.close()
+            accounts = Account.query.with_entities(
+                Account.account_number,
+                Account.account_type,
+                Account.balance,
+                Account.expiration_date,
+                Account.cvv
+            ).filter_by(user=cc)
+
             return accounts
         except Exception as ex:
             raise Exception(f"Error al obtener cuentas del usuario: {ex}")
@@ -34,16 +24,18 @@ class AccountService():
     @classmethod
     def account_current_service(cls, cc):
         try:
-            connection = get_db_connection()
+            db.session.execute(text("""
+                CALL sp_generate_account_current(
+                    :cc, @p_message
+                )
+            """), {
+                'cc': cc
+            })
 
-            with connection.cursor() as cursor:
-                cursor.callproc("sp_generate_account_current", (cc, None))
+            result = db.session.execute(text("SELECT @p_message"))
+            message = result.fetchone()[0]
 
-                cursor.execute("SELECT @p_message;")
-                message = cursor.fetchone()[0]
-
-            connection.commit()
-            connection.close()
+            db.session.commit()
 
             return message
         except Exception as ex:

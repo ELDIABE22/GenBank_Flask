@@ -1,7 +1,7 @@
 CREATE DATABASE GenBank;
 USE GenBank;
 
-CREATE TABLE Users (
+CREATE TABLE users (
     cc CHAR(10) NOT NULL PRIMARY KEY,
     first_name VARCHAR(255) NOT NULL,
     last_name VARCHAR(255) NOT NULL,
@@ -125,8 +125,8 @@ BEGIN
             -- Asignar la fecha de expiración en el formato "MM/YY" a 3 años a partir de la fecha actual
             SET expiration_date = DATE_FORMAT(DATE_ADD(CURDATE(), INTERVAL 3 YEAR), '%m/%y');
 
-            INSERT INTO accounts (account_number, user, balance, expiration_date, cvv, account_type)
-            VALUES (new_account_number, p_cc, 0.00, expiration_date, new_cvv, 'Corriente');
+            INSERT INTO accounts (account_number, user, balance, expiration_date, cvv, account_type, state)
+            VALUES (new_account_number, p_cc, 0.00, expiration_date, new_cvv, 'Corriente', "Activa");
 
             SET p_message = 'Cuenta corriente generada exitosamente.';
         END IF;
@@ -262,8 +262,8 @@ BEGIN
     -- Asignar la fecha de expiración en el formato "MM/YY" a 3 años a partir de la fecha actual
     SET expiration_date = DATE_FORMAT(DATE_ADD(CURDATE(), INTERVAL 3 YEAR), '%m/%y');
 
-    INSERT INTO accounts (account_number, user, expiration_date, cvv)
-    VALUES (new_account_number, NEW.cc, expiration_date, new_cvv);
+    INSERT INTO accounts (account_number, user, balance, expiration_date, cvv, state)
+    VALUES (new_account_number, NEW.cc, 0.00, expiration_date, new_cvv, "Activa");
 END $$
 
 DELIMITER ;
