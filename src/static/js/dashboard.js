@@ -196,10 +196,10 @@ document.addEventListener('DOMContentLoaded', () => {
                   style: 'currency',
                   currency: 'COP',
                 })}`
-              : parseFloat(t.amount).toLocaleString('es-CO', {
+              : `+${parseFloat(t.amount).toLocaleString('es-CO', {
                   style: 'currency',
                   currency: 'COP',
-                }),
+                })}`,
           date: new Date(t.date).toLocaleString('es-CO', {
             year: 'numeric',
             month: '2-digit',
@@ -211,8 +211,6 @@ document.addEventListener('DOMContentLoaded', () => {
           }),
         }));
 
-      console.log(recentTransactions);
-
       $(document).ready(function () {
         const tabla = $('#table-transaction').DataTable({
           paging: false,
@@ -223,14 +221,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
         recentTransactions.forEach((t) => {
           const rowNode = tabla.row
-            .add([t.account, t.amount, t.state, t.date])
+            .add([
+              t.type === 'Gasto' ? t.account : t.related_account,
+              t.type === 'Gasto' ? t.related_account : t.account,
+              t.amount,
+              t.state,
+              t.date,
+            ])
             .draw()
             .node();
 
           if (t.type === 'Gasto') {
-            $(rowNode).css('background-color', 'rgba(255, 0, 0, 0.7)');
+            $(rowNode).css('background-color', 'rgba(255, 0, 0, 0.15)');
           } else {
-            $(rowNode).css('background-color', 'rgba(0, 255, 0, 0.5)');
+            $(rowNode).css('background-color', 'rgba(0, 128, 0, 0.1)');
           }
         });
       });

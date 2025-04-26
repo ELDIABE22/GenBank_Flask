@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const sidebarOpen = document.getElementById('sidebar-open');
   const sidebarClose = document.getElementById('sidebar-close');
   const contentDashboard = document.getElementById('content-dashboard');
-  const signOut = document.getElementById('sign-out');
+  const signOutIcons = document.querySelectorAll('.sign-out');
   const buttons = document.querySelectorAll('.btn[data-path]');
 
   const currentPath = window.location.pathname;
@@ -53,7 +53,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  signOut.addEventListener('click', () => {
-    logout();
+  signOutIcons.forEach((icon) => {
+    icon.addEventListener('click', () => {
+      logout();
+    });
   });
 });
