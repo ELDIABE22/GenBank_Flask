@@ -21,3 +21,7 @@ def dashboard_route():
 @main.route('/transfer')
 def transfer_route():
     return render_template('transfer.html')
+
+@main.route('/transaction')
+def transaction_route():
+    return render_template('transaction.html')

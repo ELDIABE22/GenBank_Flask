@@ -66,13 +66,15 @@
     <section class="space-y-8">
       <div class="flex justify-between items-center">
         <p class="text-xl sm:text-2xl font-bold">Transacciones recientes</p>
-        <button class="btn outline outline-none max-w-[130px] shadow-md">
-          Ver todos
-        </button>
+        <a href="/transaction">
+          <button class="btn outline outline-none max-w-[130px] shadow-md">
+            Ver todos
+          </button>
+        </a>
       </div>
 
       <!-- Tabla -->
-      <div class="w-full max-w-6xl mx-auto">
+      <div class="w-full max-w-6xl mx-auto overflow-x-auto">
         <table id="table-transaction" class="w-full rounded-lg text-left">
           <thead class="bg-[#0047a3] text-white">
             <tr>
@@ -253,7 +255,10 @@
           </div>
         </div>
         <!-- Tarjeta 2 -->
-        <div id="current-account" class="absolute right-0 top-8 z-0 w-[90%] hidden">
+        <div
+          id="current-account"
+          class="absolute right-0 top-8 z-0 w-[90%] hidden"
+        >
           <div class="flex w-[316px] h-[190px]">
             <div
               class="relative w-[75%] h-full flex flex-col justify-between bg-[#3a1f54] rounded-l-[20px] p-5 z-20"

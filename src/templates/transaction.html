@@ -1,0 +1,183 @@
+{% extends 'layout.html' %}
+<!-- Título -->
+{% block title %}Transactions{% endblock %}
+<!-- Contenido -->
+{% block content %}
+<div id="section-transaction" class="p-10 space-y-8">
+  <!-- Sección titulo -->
+  <section>
+    <!-- Icono open sidebar -->
+    <svg
+      id="sidebar-open"
+      xmlns="http://www.w3.org/2000/svg"
+      width="32"
+      height="32"
+      fill="#080808"
+      viewBox="0 0 256 256"
+      class="cursor-pointer hidden mb-5"
+    >
+      <path
+        d="M224,128a8,8,0,0,1-8,8H40a8,8,0,0,1,0-16H216A8,8,0,0,1,224,128ZM40,72H216a8,8,0,0,0,0-16H40a8,8,0,0,0,0,16ZM216,184H40a8,8,0,0,0,0,16H216a8,8,0,0,0,0-16Z"
+      ></path>
+    </svg>
+
+    <div class="flex flex-col md:flex-row justify-between gap-8 pb-[30px] border-b">
+      <div>
+        <h2 class="text-2xl sm:text-4xl font-semibold mb-3">
+          Historial de transacciones
+        </h2>
+        <p class="text-xs sm:text-sm text-slate-500">
+          Obtenga información valiosa y haga un seguimiento de sus transacciones
+          con facilidad.
+        </p>
+      </div>
+
+      <div class="select-container max-w-[230px] w-full">
+        <select id="department" name="department" class="select" size="1">
+          <option value="" disabled selected hidden>Seleccionar cuenta</option>
+        </select>
+        <div class="icon">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="20"
+            height="20"
+            fill="#6b7280"
+            viewBox="0 0 256 256"
+          >
+            <path
+              d="M213.66,165.66a8,8,0,0,1-11.32,0L128,91.31,53.66,165.66a8,8,0,0,1-11.32-11.32l80-80a8,8,0,0,1,11.32,0l80,80A8,8,0,0,1,213.66,165.66Z"
+            ></path>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Sección monitoriar saldo -->
+  <section class="lg:px-7">
+    <divs
+      class="flex flex-col sm:flex-row justify-between items-center gap-5 bg-[#3A1F54] w-full sm:h-[150px] rounded-xl p-6"
+    >
+      <div class="space-y-2">
+        <div class="space-y-[10px]">
+          <p class="text-2xl font-bold text-white text-center sm:text-left">Monitorear</p>
+          <p class="text-base font-normal text-white text-center sm:text-left">Cuenta de ahorros</p>
+        </div>
+
+        <div class="text-white">
+          <p class="text-lg text-center sm:text-left">
+            ●●●● ●●●● ●●●● <span class="text-sm">9999</span>
+          </p>
+        </div>
+      </div>
+
+      <!-- Card saldo actual -->
+      <div
+        class="flex flex-col justify-center space-y-1 rounded-lg border p-4 bg-white/30"
+      >
+        <p class="text-sm font-medium text-white">Saldo actual</p>
+        <span class="text-2xl font-semibold text-white">$41,382.80</span>
+      </div>
+    </divs>
+  </section>
+
+  <!-- Sección tabla historial transacciones -->
+  <section class="space-y-8">
+    <div>
+      <p class="text-lg font-semibold">Historial</p>
+    </div>
+
+    <!-- Tabla -->
+    <div class="w-full max-w-8xl mx-auto overflow-x-auto">
+      <table id="table-transaction" class="w-full rounded-lg text-left">
+        <thead class="bg-[#0047a3] text-white">
+          <tr>
+            <th class="py-3 px-4">Desde</th>
+            <th class="py-3 px-4">Hacia</th>
+            <th class="py-3 px-4">Monto</th>
+            <th class="py-3 px-4">Estado</th>
+            <th class="py-3 px-4">Fecha</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="bg-red-100">
+            <td class="py-3 px-4">9230859493120442</td>
+            <td class="py-3 px-4">9230859493120442</td>
+            <td class="py-3 px-4 text-red-600">-$ 50.000,00</td>
+            <td class="py-3 px-4">Exitoso</td>
+            <td class="py-3 px-4">09/02/2025, 07:53</td>
+          </tr>
+          <tr class="bg-green-100">
+            <td class="py-3 px-4">9230859493120442</td>
+            <td class="py-3 px-4">9230859493120442</td>
+            <td class="py-3 px-4">+$ 8.000,00</td>
+            <td class="py-3 px-4">Exitoso</td>
+            <td class="py-3 px-4">09/02/2025, 06:55</td>
+          </tr>
+          <tr class="bg-green-100">
+            <td class="py-3 px-4">9230859493120442</td>
+            <td class="py-3 px-4">9230859493120442</td>
+            <td class="py-3 px-4">+$ 5.000,00</td>
+            <td class="py-3 px-4">Exitoso</td>
+            <td class="py-3 px-4">09/02/2025, 06:55</td>
+          </tr>
+          <tr class="bg-green-100">
+            <td class="py-3 px-4">9230859493120442</td>
+            <td class="py-3 px-4">9230859493120442</td>
+            <td class="py-3 px-4">+$ 10.000,00</td>
+            <td class="py-3 px-4">Exitoso</td>
+            <td class="py-3 px-4">09/02/2025, 06:55</td>
+          </tr>
+          <tr class="bg-red-100">
+            <td class="py-3 px-4">9230859493120442</td>
+            <td class="py-3 px-4">9230859493120442</td>
+            <td class="py-3 px-4 text-red-600">-$ 20.000,00</td>
+            <td class="py-3 px-4">Exitoso</td>
+            <td class="py-3 px-4">08/02/2025, 09:53</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Paginacioón de la tabla -->
+    <div class="flex justify-between border-t pt-5">
+      <!-- Atras -->
+      <div class="flex gap-x-2 items-center cursor-pointer">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="20"
+          height="20"
+          fill="#000000"
+          viewBox="0 0 256 256"
+        >
+          <path
+            d="M224,128a8,8,0,0,1-8,8H59.31l58.35,58.34a8,8,0,0,1-11.32,11.32l-72-72a8,8,0,0,1,0-11.32l72-72a8,8,0,0,1,11.32,11.32L59.31,120H216A8,8,0,0,1,224,128Z"
+          ></path>
+        </svg>
+        <p>Atras</p>
+      </div>
+
+      <!-- Página -->
+      <div class="flex items-center justify-center w-10 h-10 bg-gray-100 rounded-lg">
+        <p class="text-sm font-medium">1</p>
+      </div>
+
+      <!-- Siguiente -->
+      <div class="flex gap-x-2 items-center cursor-pointer">
+        <p>Siguiente</p>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="20"
+          height="20"
+          fill="#000000"
+          viewBox="0 0 256 256"
+        >
+          <path
+            d="M221.66,133.66l-72,72a8,8,0,0,1-11.32-11.32L196.69,136H40a8,8,0,0,1,0-16H196.69L138.34,61.66a8,8,0,0,1,11.32-11.32l72,72A8,8,0,0,1,221.66,133.66Z"
+          ></path>
+        </svg>
+      </div>
+    </div>
+  </section>
+</div>
+{% endblock %}
