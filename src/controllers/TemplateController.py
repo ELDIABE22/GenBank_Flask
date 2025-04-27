@@ -25,3 +25,7 @@ def transfer_route():
 @main.route('/transaction')
 def transaction_route():
     return render_template('transaction.html')
+
+@main.route('/deposit')
+def deposit_route():
+    return render_template('deposit.html')
