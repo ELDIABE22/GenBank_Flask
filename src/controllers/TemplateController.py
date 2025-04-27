@@ -17,3 +17,7 @@ def register_route():
 @main.route('/dashboard')
 def dashboard_route():
     return render_template('dashboard.html') 
+
+@main.route('/transfer')
+def transfer_route():
+    return render_template('transfer.html')
