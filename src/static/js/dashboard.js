@@ -1,4 +1,5 @@
 import { getCookie } from './token.js';
+import { animateNumber } from './utils.js';
 
 document.addEventListener('DOMContentLoaded', () => {
   const newAccountBtn = document.getElementById('new-account');
@@ -416,27 +417,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   fetchAccounts();
 });
-
-// Función para animar un número desde un valor inicial hasta un valor final
-const animateNumber = (element, start, end, duration) => {
-  let startTime = null;
-
-  function updateNumber(timestamp) {
-    if (!startTime) startTime = timestamp;
-    const progress = Math.min((timestamp - startTime) / duration, 1);
-    const currentNumber = Math.floor(progress * (end - start) + start);
-    element.textContent = `${currentNumber.toLocaleString('es-CO', {
-      style: 'currency',
-      currency: 'COP',
-    })}`;
-
-    if (progress < 1) {
-      requestAnimationFrame(updateNumber);
-    }
-  }
-
-  requestAnimationFrame(updateNumber);
-};
 
 // Función para cambiar el índice z de dos elementos de tarjeta para traer uno al frente
 const toggleZIndex = (cardToShow, cardToHide) => {
