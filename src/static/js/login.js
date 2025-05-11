@@ -97,7 +97,6 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     } catch (error) {
       console.error('Error:', error);
-      alert(error.message);
     } finally {
       btn_login.classList.remove('loading');
       btn_login.disabled = false;

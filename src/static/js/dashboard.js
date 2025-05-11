@@ -6,14 +6,22 @@ document.addEventListener('DOMContentLoaded', () => {
   const currentAccount = document.getElementById('current-account');
   const showCardDataAhorro = document.getElementById('show-card-data-ahorro');
   const hideCardDataAhorro = document.getElementById('hide-card-data-ahorro');
-  const showCardDataCorriente = document.getElementById('show-card-data-corriente');
-  const hideCardDataCorriente = document.getElementById('hide-card-data-corriente');
+  const showCardDataCorriente = document.getElementById(
+    'show-card-data-corriente'
+  );
+  const hideCardDataCorriente = document.getElementById(
+    'hide-card-data-corriente'
+  );
+
+  let chartInstance = null;
 
   const balance = document.getElementById('balance');
 
   const ctx = document.getElementById('doughnutChart').getContext('2d');
 
   const userData = JSON.parse(localStorage.getItem('userData'));
+
+  const notyf = new window.Notyf();
 
   let savingsAccountData;
   let currentAccountData;
@@ -64,9 +72,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       // Datos de las tarjetas
       if (data.length === 1) {
-        savingsAccountData = data.find(
-          (a) => a.account_type === 'Ahorros'
-        );
+        savingsAccountData = data.find((a) => a.account_type === 'Ahorros');
 
         const formattedBalance = parseFloat(
           savingsAccountData.balance
@@ -94,7 +100,8 @@ document.addEventListener('DOMContentLoaded', () => {
           style: 'currency',
           currency: 'COP',
         });
-        const lastFourDigitsSavings = savingsAccountData.account_number.slice(-4);
+        const lastFourDigitsSavings =
+          savingsAccountData.account_number.slice(-4);
 
         const formattedCurrentBalance = parseFloat(
           currentAccountData.balance
@@ -102,7 +109,8 @@ document.addEventListener('DOMContentLoaded', () => {
           style: 'currency',
           currency: 'COP',
         });
-        const lastFourDigitsCurrent = currentAccountData.account_number.slice(-4);
+        const lastFourDigitsCurrent =
+          currentAccountData.account_number.slice(-4);
 
         document.getElementById('balance-ahorro').textContent =
           formattedSavingsBalance;
@@ -132,7 +140,11 @@ document.addEventListener('DOMContentLoaded', () => {
         ],
       };
 
-      new Chart(ctx, {
+      if (chartInstance) {
+        chartInstance.destroy();
+      }
+
+      chartInstance = new Chart(ctx, {
         type: 'doughnut',
         data: chartData,
         options: {
@@ -198,31 +210,33 @@ document.addEventListener('DOMContentLoaded', () => {
         }));
 
       $(document).ready(function () {
-        const tabla = $('#table-transaction').DataTable({
-          paging: false,
-          searching: false,
-          info: false,
-          responsive: true,
-        });
+        if (!$.fn.DataTable.isDataTable('#table-transaction')) {
+          const tabla = $('#table-transaction').DataTable({
+            paging: false,
+            searching: false,
+            info: false,
+            responsive: true,
+          });
 
-        recentTransactions.forEach((t) => {
-          const rowNode = tabla.row
-            .add([
-              t.type === 'Gasto' ? t.account : t.related_account,
-              t.type === 'Gasto' ? t.related_account : t.account,
-              t.amount,
-              t.state,
-              t.date,
-            ])
-            .draw()
-            .node();
+          recentTransactions.forEach((t) => {
+            const rowNode = tabla.row
+              .add([
+                t.type === 'Gasto' ? t.account : t.related_account,
+                t.type === 'Gasto' ? t.related_account : t.account,
+                t.amount,
+                t.state,
+                t.date,
+              ])
+              .draw()
+              .node();
 
-          if (t.type === 'Gasto') {
-            $(rowNode).css('background-color', 'rgba(255, 0, 0, 0.15)');
-          } else {
-            $(rowNode).css('background-color', 'rgba(0, 128, 0, 0.1)');
-          }
-        });
+            if (t.type === 'Gasto') {
+              $(rowNode).css('background-color', 'rgba(255, 0, 0, 0.15)');
+            } else {
+              $(rowNode).css('background-color', 'rgba(0, 128, 0, 0.1)');
+            }
+          });
+        }
       });
     } catch (error) {
       console.log(
@@ -233,9 +247,111 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
+  // Evento para mostrar el modal de crear cuenta corriente
+  newAccountBtn.addEventListener('click', () => {
+    const modalContainer = document.createElement('div');
+    modalContainer.id = 'modalAccountCorriente';
+    modalContainer.className =
+      'absolute inset-0 flex justify-center items-center z-[100] bg-black/60';
+    modalContainer.innerHTML = `
+    <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-lg">
+        <h2 class="text-2xl font-bold text-gray-800 text-center mb-4">
+          ¡Estás a un paso de crear tu cuenta corriente!
+        </h2>
+        <p class="text-gray-600 text-sm text-center mb-6">
+          Con tu nueva cuenta, podrás gestionar tu dinero de forma
+          segura y disfrutar de la libertad de ahorrar a tu ritmo.
+        </p>
+        <ul class="text-gray-600 mb-6 space-y-2">
+          <li>
+            ✔ Aceptas nuestros
+            <a href="#" class="text-blue-600 hover:underline"
+              >Términos y Condiciones</a
+            >
+            y
+            <a href="#" class="text-blue-600 hover:underline"
+              >Política de Privacidad</a
+            >.
+          </li>
+          <li>✔ Confirmas que proporcionarás información veraz y actualizada.</li>
+          <li>
+            ✔ Entiendes que esta cuenta está sujeta a regulaciones bancarias
+            locales.
+          </li>
+        </ul>
+        <label class="flex items-center mb-6">
+          <input
+            type="checkbox"
+            id="termsCheckbox"
+            class="h-5 w-5 text-blue-600 rounded focus:ring-blue-500"
+            required
+          />
+          <span class="ml-2 text-gray-600"
+            >He leído y acepto los términos y condiciones.</span
+          >
+        </label>
+        <div class="flex justify-center space-x-4">
+          <button id="createAccountBtn" class="btn" disabled>Crear mi cuenta</button>
+          <button id="closeModal" class="btn bg-red-500 hover:bg-red-600">Cancelar</button>
+        </div>
+        <p class="text-gray-500 text-xs text-center mt-4">
+          Tu información está protegida con los más altos estándares de seguridad.
+        </p>
+      </div>
+    `;
+
+    document.getElementById('body-layout').appendChild(modalContainer);
+
+    const termsCheckbox = modalContainer.querySelector('#termsCheckbox');
+    const createAccountBtn = modalContainer.querySelector('#createAccountBtn');
+
+    // Evento para habilitar el botón de crear cuenta
+    termsCheckbox.addEventListener('change', (e) => {
+      createAccountBtn.disabled = !e.target.checked;
+    });
+
+    // Evento para cerrar el modal
+    document.getElementById('closeModal').addEventListener('click', () => {
+      document.getElementById('body-layout').removeChild(modalContainer);
+    });
+
+    // Evento para crear la cuenta
+    createAccountBtn.addEventListener('click', async () => {
+      if (!createAccountBtn.disabled) {
+        try {
+          const res = await fetch('/api/v1/account/current', {
+            method: 'POST',
+            headers: {
+              Authorization: `Bearer ${getCookie('token')}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              cc: JSON.parse(localStorage.getItem('userData')).cc,
+            }),
+          });
+
+          const result = await res.json();
+
+          if (res.status === 201) {
+            fetchAccounts();
+            notyf.success(result.message);
+            modalContainer.remove();
+          } else {
+            notyf.error(result.message);
+          }
+        } catch (error) {
+          console.error('Error al crear cuenta corriente:', error);
+        }
+      }
+    });
+  });
+
+  // Evento para poner tarjeta de ahorros en el frente
   savingsAccount.addEventListener('click', () =>
     toggleZIndex(savingsAccount, currentAccount)
   );
+
+  // Evento para poner tarjeta corriente en el frente
   currentAccount.addEventListener('click', () =>
     toggleZIndex(currentAccount, savingsAccount)
   );

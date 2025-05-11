@@ -208,9 +208,20 @@ END $$
 CREATE PROCEDURE sp_generate_unique_account_number(OUT new_account_number CHAR(16))
 BEGIN
     DECLARE unique_number BOOLEAN DEFAULT FALSE;
+    DECLARE i INT;
+    DECLARE digit CHAR(1);
+    SET new_account_number = '';
     
     WHILE unique_number = FALSE DO
-        SET new_account_number = LPAD(FLOOR(RAND() * 10000000000000000), 16, '0');
+        SET new_account_number = '';
+        SET i = 1;
+
+        WHILE i <= 16 DO
+            SET digit = FLOOR(RAND() * 10);
+            SET new_account_number = CONCAT(new_account_number, digit);
+            SET i = i + 1;
+        END WHILE;
+
         IF NOT EXISTS (SELECT 1 FROM accounts WHERE account_number = new_account_number) THEN
             SET unique_number = TRUE;
         END IF;
