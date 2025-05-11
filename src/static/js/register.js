@@ -1,3 +1,5 @@
+import { validateRegister } from './validations.js';
+
 document.addEventListener('DOMContentLoaded', () => {
   const form = document.getElementById('form-register');
   // Valores del formulario
@@ -37,121 +39,24 @@ document.addEventListener('DOMContentLoaded', () => {
   let validate = new window.JustValidate(form);
   const notyf = new window.Notyf();
 
-  const validateStep1 = () => {
-    validate
-      .addField(cc, [
-        { rule: 'integer', errorMessage: 'El campo tiene que ser numérico' },
-        { rule: 'required', errorMessage: 'Requerido' },
-        { rule: 'minLength', value: 8, errorMessage: 'Mínimo 8 caracteres' },
-        { rule: 'maxLength', value: 10, errorMessage: 'Máximo 10 caracteres' },
-      ])
-      .addField(first_name, [
-        { rule: 'required', errorMessage: 'Requerido' },
-        { rule: 'customRegexp', value: /^[^\d]+$/, errorMessage: 'Inválido' },
-        { rule: 'minLength', value: 3, errorMessage: 'Mínimo 3 caracteres' },
-        { rule: 'maxLength', value: 50, errorMessage: 'Máximo 50 caracteres' },
-      ])
-      .addField(last_name, [
-        { rule: 'required', errorMessage: 'Requerido' },
-        { rule: 'customRegexp', value: /^[^\d]+$/, errorMessage: 'Inválido' },
-        { rule: 'minLength', value: 5, errorMessage: 'Mínimo 5 caracteres' },
-        { rule: 'maxLength', value: 50, errorMessage: 'Máximo 50 caracteres' },
-      ])
-      .addField(birth_date, [
-        { rule: 'required', errorMessage: 'Requerido' },
-        {
-          rule: 'custom',
-          validator: (value) => {
-            const birthDate = new Date(value);
-            const today = new Date();
-            const age = today.getFullYear() - birthDate.getFullYear();
-            const monthDiff = today.getMonth() - birthDate.getMonth();
-            const dayDiff = today.getDate() - birthDate.getDate();
-            return !(
-              age < 18 ||
-              (age === 18 &&
-                (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)))
-            );
-          },
-          errorMessage: 'Debes ser mayor de 18 años',
-        },
-      ]);
-  };
-
-  const validateStep2 = () => {
-    validate
-      .addField(email, [
-        { rule: 'email' },
-        { rule: 'required', errorMessage: 'Requerido' },
-      ])
-      .addField(phone_number, [
-        { rule: 'required', errorMessage: 'Requerido' },
-        { rule: 'customRegexp', value: /^[0-9]+$/, errorMessage: 'Inválido' },
-        {
-          rule: 'minLength',
-          value: 10,
-          errorMessage: 'Tiene que tener 10 números',
-        },
-        {
-          rule: 'maxLength',
-          value: 10,
-          errorMessage: 'Tiene que tener 10 números',
-        },
-      ]);
-  };
-
-  const validateStep3 = () => {
-    validate
-      .addField(department, [
-        { rule: 'required', errorMessage: 'Requerido' },
-        { rule: 'customRegexp', value: /^[^\d]+$/, errorMessage: 'Inválido' },
-        { rule: 'minLength', value: 4, errorMessage: 'Mínimo 4 caracteres' },
-        { rule: 'maxLength', value: 25, errorMessage: 'Máximo 25 caracteres' },
-      ])
-      .addField(city, [
-        { rule: 'required', errorMessage: 'Requerido' },
-        { rule: 'customRegexp', value: /^[^\d]+$/, errorMessage: 'Inválido' },
-        { rule: 'minLength', value: 4, errorMessage: 'Mínimo 4 caracteres' },
-        { rule: 'maxLength', value: 25, errorMessage: 'Máximo 25 caracteres' },
-      ])
-      .addField(address, [
-        { rule: 'required', errorMessage: 'Requerido' },
-        { rule: 'minLength', value: 3, errorMessage: 'Mínimo 3 caracteres' },
-        { rule: 'maxLength', value: 50, errorMessage: 'Máximo 50 caracteres' },
-      ]);
-  };
-
-  const validateStep4 = () => {
-    validate
-      .addField(password, [
-        { rule: 'required', errorMessage: 'Requerido' },
-        { rule: 'minLength', value: 6, errorMessage: 'Mínimo 6 caracteres' },
-        { rule: 'maxLength', value: 15, errorMessage: 'Máximo 15 caracteres' },
-      ])
-      .addField(password_confirmation, [
-        {
-          rule: 'required',
-          errorMessage: 'Requerido',
-        },
-        { rule: 'minLength', value: 6, errorMessage: 'Mínimo 6 caracteres' },
-        { rule: 'maxLength', value: 15, errorMessage: 'Máximo 15 caracteres' },
-        {
-          validator: () => {
-            if (password.value !== password_confirmation.value) {
-              return false;
-            }
-
-            return true;
-          },
-          errorMessage: 'Las contraseñas deben ser las mismas',
-        },
-      ]);
-  };
-
   // Función para manejar los pasos
   const handleStep = () => {
+    const validationDatas = {
+      cc,
+      first_name,
+      last_name,
+      birth_date,
+      email,
+      phone_number,
+      department,
+      city,
+      address,
+      password,
+      password_confirmation,
+    };
+
     if (step === 1) {
-      validateStep1();
+      validateRegister(validate, validationDatas, step);
       validate.onSuccess(() => {
         step++;
         personal_information.classList.replace('flex', 'hidden');
@@ -159,14 +64,14 @@ document.addEventListener('DOMContentLoaded', () => {
         button_step_back.classList.replace('hidden', 'inline');
       });
     } else if (step === 2) {
-      validateStep2();
+      validateRegister(validate, validationDatas, step);
       validate.onSuccess(() => {
         step++;
         contact_information.classList.replace('flex', 'hidden');
         residence_address.classList.replace('hidden', 'flex');
       });
     } else if (step === 3) {
-      validateStep3();
+      validateRegister(validate, validationDatas, step);
       validate.onSuccess(() => {
         step++;
         residence_address.classList.replace('flex', 'hidden');
@@ -175,7 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
           'Crear cuenta';
       });
     } else if (step === 4) {
-      validateStep4();
+      validateRegister(validate, validationDatas, step);
       validate.onSuccess(async () => {
         document
           .querySelectorAll(

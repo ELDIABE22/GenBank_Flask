@@ -159,11 +159,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
       fetchTransaction(data[0].account_number);
     } catch (error) {
-      console.log(
+      console.error(
         `Error al obtener las cuentas bancarias del usuario ${
           userData.first_name.split(' ')[0]
         }`,
-        error
+        error.message
       );
     } finally {
       document.getElementById('loader').style.display = 'none';
@@ -326,7 +326,7 @@ document.addEventListener('DOMContentLoaded', () => {
               'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-              cc: JSON.parse(localStorage.getItem('userData')).cc,
+              cc: userData.cc,
             }),
           });
 

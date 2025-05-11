@@ -1,3 +1,5 @@
+import { validateLogin } from './validations.js';
+
 document.addEventListener('DOMContentLoaded', () => {
   const form = document.getElementById('form-login');
   // Valores del formulario
@@ -10,52 +12,9 @@ document.addEventListener('DOMContentLoaded', () => {
   // Hace visible el contenido con una transición suave
   document.body.style.opacity = '1';
 
-  const validate = new window.JustValidate(form);
   const notyf = new window.Notyf();
 
   let isPasswordVisible = false;
-
-  // Validar campos del formulario
-  validate
-    .addField(cc, [
-      {
-        rule: 'integer',
-        errorMessage: 'El campo tiene que ser numérico',
-      },
-      {
-        rule: 'required',
-        errorMessage: 'Requerido',
-      },
-      {
-        rule: 'minLength',
-        value: 8,
-        errorMessage: 'Mínimo 8 caracteres',
-      },
-      {
-        rule: 'maxLength',
-        value: 10,
-        errorMessage: 'Máximo 10 caracteres',
-      },
-    ])
-    .addField(password, [
-      {
-        rule: 'required',
-        errorMessage: 'Requerido',
-      },
-      {
-        rule: 'minLength',
-        value: 6,
-        errorMessage: 'Mínimo 6 caracteres',
-      },
-      {
-        rule: 'maxLength',
-        value: 15,
-        errorMessage: 'Máximo 15 caracteres',
-      },
-    ])
-    .onSuccess(() => {
-      handleLogin();
-    });
 
   //   Función para enviar los datos del formulario al servidor
   const handleLogin = async () => {
@@ -107,6 +66,9 @@ document.addEventListener('DOMContentLoaded', () => {
         .forEach((el) => (el.disabled = false));
     }
   };
+
+  // Validar campos del formulario y hacer el submit
+  validateLogin(form, handleLogin, { cc, password });
 
   //   Función para mostrar u ocultar la contraseña
   const togglePasswordVisibility = () => {
