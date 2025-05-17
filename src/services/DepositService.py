@@ -6,11 +6,22 @@ from src.models.Deposits import Deposit
 
 class DepositService():
     @classmethod
-    def account_deposits_service(cls, deposit):
+    def account_deposits_service(cls, deposit, page=1, limit=10):
         try:
-            deposits = Deposit.query.filter_by(account=deposit.account).order_by(Deposit.date).all()
+            offset = (page - 1) * limit
             
-            return deposits
+            deposits = Deposit.query \
+            .filter_by(account=deposit.account) \
+            .order_by(Deposit.date) \
+            .offset(offset) \
+            .limit(limit) \
+            .all()
+
+            total = Deposit.query \
+            .filter_by(account=deposit.account) \
+            .count()
+            
+            return deposits, total
         except Exception as ex:
             raise Exception(f"Error al obtener los depósitos de la cuenta: {ex}")
         

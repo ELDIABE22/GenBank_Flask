@@ -3,6 +3,8 @@
 {% block title %}Deposits{% endblock %}
 <!-- Contenido -->
 {% block content %}
+<div id="loader" class="loader"></div>
+
 <div id="section-deposit" class="p-10 space-y-8">
   <!-- Sección titulo -->
   <section>
@@ -35,7 +37,7 @@
       </div>
 
       <div class="select-container max-w-[230px] w-full">
-        <select id="department" name="department" class="select" size="1">
+        <select id="accounts" name="accounts" class="select" size="1">
           <option value="" disabled selected hidden>Seleccionar cuenta</option>
         </select>
         <div class="icon">
@@ -65,14 +67,17 @@
           <p class="text-2xl font-bold text-white text-center sm:text-left">
             Monitorear
           </p>
-          <p class="text-base font-normal text-white text-center sm:text-left">
+          <p
+            id="text-account"
+            class="text-base font-normal text-white text-center sm:text-left"
+          >
             Cuenta de ahorros
           </p>
         </div>
 
         <div class="text-white">
           <p class="text-lg text-center sm:text-left">
-            ●●●● ●●●● ●●●● <span class="text-sm">9999</span>
+            ●●●● ●●●● ●●●● <span id="last-4-digits" class="text-sm">9999</span>
           </p>
         </div>
       </div>
@@ -82,7 +87,9 @@
         class="flex flex-col justify-center space-y-1 rounded-lg border p-4 bg-white/30"
       >
         <p class="text-sm font-medium text-white">Saldo actual</p>
-        <span class="text-2xl font-semibold text-white">$41,382.80</span>
+        <span id="balance-account" class="text-2xl font-semibold text-white"
+          >$41,382.80</span
+        >
       </div>
     </divs>
   </section>
@@ -99,7 +106,7 @@
 
     <!-- Tabla -->
     <div class="w-full max-w-8xl mx-auto overflow-x-auto">
-      <table id="table-transaction" class="w-full rounded-lg text-left">
+      <table id="table-deposit" class="w-full rounded-lg text-left">
         <thead class="bg-[#0047a3] text-white">
           <tr>
             <th class="py-3 px-4">Monto</th>
@@ -107,40 +114,16 @@
             <th class="py-3 px-4">Fecha</th>
           </tr>
         </thead>
-        <tbody>
-          <tr class="bg-green-100">
-            <td class="py-3 px-4">+$ 50.000,00</td>
-            <td class="py-3 px-4">Exitoso</td>
-            <td class="py-3 px-4">09/02/2025, 07:53</td>
-          </tr>
-          <tr class="bg-green-100">
-            <td class="py-3 px-4">+$ 8.000,00</td>
-            <td class="py-3 px-4">Exitoso</td>
-            <td class="py-3 px-4">09/02/2025, 06:55</td>
-          </tr>
-          <tr class="bg-green-100">
-            <td class="py-3 px-4">+$ 5.000,00</td>
-            <td class="py-3 px-4">Exitoso</td>
-            <td class="py-3 px-4">09/02/2025, 06:55</td>
-          </tr>
-          <tr class="bg-green-100">
-            <td class="py-3 px-4">+$ 10.000,00</td>
-            <td class="py-3 px-4">Exitoso</td>
-            <td class="py-3 px-4">09/02/2025, 06:55</td>
-          </tr>
-          <tr class="bg-green-100">
-            <td class="py-3 px-4">+$ 20.000,00</td>
-            <td class="py-3 px-4">Exitoso</td>
-            <td class="py-3 px-4">08/02/2025, 09:53</td>
-          </tr>
-        </tbody>
       </table>
     </div>
 
     <!-- Paginacioón de la tabla -->
     <div class="flex justify-between border-t pt-5">
       <!-- Atras -->
-      <div class="flex gap-x-2 items-center cursor-pointer">
+      <div
+        id="btn-prev"
+        class="flex gap-x-2 items-center hover:bg-slate-100 p-2 rounded-xl cursor-pointer"
+      >
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="20"
@@ -157,13 +140,17 @@
 
       <!-- Página -->
       <div
+        id="page-number"
         class="flex items-center justify-center w-10 h-10 bg-gray-100 rounded-lg"
       >
         <p class="text-sm font-medium">1</p>
       </div>
 
       <!-- Siguiente -->
-      <div class="flex gap-x-2 items-center cursor-pointer">
+      <div
+        id="btn-next"
+        class="flex gap-x-2 items-center hover:bg-slate-100 p-2 rounded-xl cursor-pointer"
+      >
         <p>Siguiente</p>
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -180,4 +167,9 @@
     </div>
   </section>
 </div>
+
+<script
+  type="module"
+  src="{{ url_for('static', filename='js/deposit.js')}}"
+></script>
 {% endblock %}

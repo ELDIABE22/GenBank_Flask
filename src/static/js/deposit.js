@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnPrev = document.getElementById('btn-prev');
   const btnNext = document.getElementById('btn-next');
 
-  const { cc } = JSON.parse(localStorage.getItem('userData'));
+  const userData = JSON.parse(localStorage.getItem('userData'));
 
   let ahorroAccountData = null;
   let corrienteAccountData = null;
@@ -24,10 +24,10 @@ document.addEventListener('DOMContentLoaded', () => {
   //Función para obtener las cuentas bancarias del usuarios
   const fetchAccounts = async () => {
     document.getElementById('loader').style.display = 'block';
-    document.getElementById('section-transaction').style.display = 'none';
+    document.getElementById('section-deposit').style.display = 'none';
 
     try {
-      const res = await fetch(`/api/v1/account/currents/${cc}`, {
+      const res = await fetch(`/api/v1/account/currents/${userData.cc}`, {
         method: 'GET',
         headers: {
           Authorization: `Bearer ${getCookie('token')}`,
@@ -68,31 +68,31 @@ document.addEventListener('DOMContentLoaded', () => {
 
         animateNumber(balanceAccount, 0, ahorroAccountData.balance, 600);
 
-        fetchTransactions(ahorroAccountData.account_number);
+        fetchDeposits(ahorroAccountData.account_number);
       }
     } catch (error) {
       console.error(
         `Error al obtener las cuentas bancarias del usuario ${
           userData.first_name.split(' ')[0]
-        }`,
+        }:`,
         error.message
       );
     } finally {
       document.getElementById('loader').style.display = 'none';
-      document.getElementById('section-transaction').style.display = 'block';
+      document.getElementById('section-deposit').style.display = 'block';
     }
   };
 
-  // Función para obtener las transacciones de la cuenta seleccionada
-  const fetchTransactions = async (account, page = 1) => {
+  // Función para obtener los depositos de la cuenta seleccionada
+  const fetchDeposits = async (account, page = 1) => {
     document.getElementById('loader').style.display = 'block';
-    document.getElementById('section-transaction').style.display = 'none';
+    document.getElementById('section-deposit').style.display = 'none';
 
     currentAccount = account;
 
     try {
       const res = await fetch(
-        `/api/v1/transaction/${account}/transactions?page=${page}&limit=5`,
+        `/api/v1/deposit/${account}?page=${page}&limit=5`,
         {
           method: 'GET',
           headers: {
@@ -105,20 +105,14 @@ document.addEventListener('DOMContentLoaded', () => {
       const data = await res.json();
 
       if (res.status === 200) {
-        const recentTransactions = data.transactions
+        const recentDeposits = data.deposits
           .sort((a, b) => new Date(b.date) - new Date(a.date))
           .map((t) => ({
             ...t,
-            amount:
-              t.type === 'Gasto'
-                ? `-${parseFloat(t.amount).toLocaleString('es-CO', {
-                    style: 'currency',
-                    currency: 'COP',
-                  })}`
-                : `+${parseFloat(t.amount).toLocaleString('es-CO', {
-                    style: 'currency',
-                    currency: 'COP',
-                  })}`,
+            amount: `+${parseFloat(t.amount).toLocaleString('es-CO', {
+              style: 'currency',
+              currency: 'COP',
+            })}`,
             date: new Date(t.date).toLocaleString('es-CO', {
               year: 'numeric',
               month: '2-digit',
@@ -132,39 +126,29 @@ document.addEventListener('DOMContentLoaded', () => {
 
         $(document).ready(function () {
           let tabla;
-          if (!$.fn.DataTable.isDataTable('#table-transaction')) {
-            tabla = $('#table-transaction').DataTable({
+          if (!$.fn.DataTable.isDataTable('#table-deposit')) {
+            tabla = $('#table-deposit').DataTable({
               paging: false,
               searching: false,
               info: false,
               responsive: true,
-              order: [[4, 'desc']],
+              order: [[2, 'desc']],
               language: {
-                emptyTable: 'No se encontraron transacciones registradas.',
+                emptyTable: 'No se encontraron depósitos registrados.',
               },
             });
           } else {
-            tabla = $('#table-transaction').DataTable();
+            tabla = $('#table-deposit').DataTable();
             tabla.clear().draw();
           }
 
-          recentTransactions.forEach((t) => {
+          recentDeposits.forEach((t) => {
             const rowNode = tabla.row
-              .add([
-                t.type === 'Gasto' ? t.account : t.related_account,
-                t.type === 'Gasto' ? t.related_account : t.account,
-                t.amount,
-                t.state,
-                t.date,
-              ])
+              .add([t.amount, t.state, t.date])
               .draw()
               .node();
 
-            if (t.type === 'Gasto') {
-              $(rowNode).css('background-color', 'rgba(255, 0, 0, 0.15)');
-            } else {
-              $(rowNode).css('background-color', 'rgba(0, 128, 0, 0.1)');
-            }
+            $(rowNode).css('background-color', 'rgba(0, 128, 0, 0.1)');
           });
         });
 
@@ -173,10 +157,10 @@ document.addEventListener('DOMContentLoaded', () => {
         updatePaginationControls();
       }
     } catch (error) {
-      console.error('Error al obtener las transacciones: ', error.message);
+      console.error('Error al obtener los depositos: ', error.message);
     } finally {
       document.getElementById('loader').style.display = 'none';
-      document.getElementById('section-transaction').style.display = 'block';
+      document.getElementById('section-deposit').style.display = 'block';
     }
   };
 
@@ -226,20 +210,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
     animateNumber(balanceAccount, 0, accountData.balance, 600);
 
-    fetchTransactions(accountNumber);
+    fetchDeposits(accountNumber);
   });
 
   btnPrev.addEventListener('click', () => {
     if (currentPage > 1) {
       currentPage--;
-      fetchTransactions(currentAccount, currentPage);
+      fetchDeposits(currentAccount, currentPage);
     }
   });
 
   btnNext.addEventListener('click', () => {
     if (currentPage < totalPages) {
       currentPage++;
-      fetchTransactions(currentAccount, currentPage);
+      fetchDeposits(currentAccount, currentPage);
     }
   });
 

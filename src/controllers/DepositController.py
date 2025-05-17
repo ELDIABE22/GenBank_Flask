@@ -17,9 +17,19 @@ def account_deposits_controller(account_number):
     has_access = Security.verify_token(request.headers)
 
     if has_access:
+        page = request.args.get('page', default=1, type=int)
+        limit = request.args.get('limit', default=10, type=int)
+        
         _deposit = Deposit(account=account_number)
-        deposits = DepositService.account_deposits_service(_deposit)
-        return jsonify(deposits_schema.dump(deposits)), 200
+        deposits, total = DepositService.account_deposits_service(_deposit, page, limit)
+        return jsonify({
+                'deposits': deposits_schema.dump(deposits),
+                'pagination': {
+                    'page': page,
+                    'limit': limit,
+                    'total': total
+                }
+        }), 200
     else:
         return jsonify({'message': '¡Error de autenticación, inicie sesión!'}), 401
 
