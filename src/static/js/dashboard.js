@@ -175,7 +175,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Función para obtener las últimas 5 transacciones del usuario
   const fetchTransaction = async (account) => {
     try {
-      const res = await fetch(`/api/v1/transaction/${account}/transactions`, {
+      const res = await fetch(`/api/v1/transaction/${account}/transactions?&limit=5`, {
         method: 'GET',
         headers: {
           Authorization: `Bearer ${getCookie('token')}`,
@@ -184,7 +184,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
       const data = await res.json();
 
-      const recentTransactions = data
+      const recentTransactions = data.transactions
         .sort((a, b) => new Date(b.date) - new Date(a.date))
         .slice(0, 5)
         .map((t) => ({

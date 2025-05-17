@@ -37,7 +37,18 @@ def account_transactions_controller(account):
     has_access = Security.verify_token(request.headers)
 
     if has_access:
-        result = TransactionService.account_transactions_service(account)
-        return jsonify(account_transactions_schema.dump(result)), 200
+        page = request.args.get('page', default=1, type=int)
+        limit = request.args.get('limit', default=10, type=int)
+
+        transactions, total = TransactionService.account_transactions_service(account, page, limit)
+        
+        return jsonify({
+            'transactions': account_transactions_schema.dump(transactions),
+            'pagination': {
+                'page': page,
+                'limit': limit,
+                'total': total
+            }
+        }), 200
     else:
         return jsonify({'message': '¡Error de autenticación, inicie sesión!'}), 401

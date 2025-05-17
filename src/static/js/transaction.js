@@ -6,11 +6,20 @@ document.addEventListener('DOMContentLoaded', function () {
   const last4Digits = document.getElementById('last-4-digits');
   const balanceAccount = document.getElementById('balance-account');
   const textAccount = document.getElementById('text-account');
+  const pageNumberEl = document
+    .getElementById('page-number')
+    .querySelector('p');
+  const btnPrev = document.getElementById('btn-prev');
+  const btnNext = document.getElementById('btn-next');
 
   const { cc } = JSON.parse(localStorage.getItem('userData'));
 
-  let ahorroAccountData;
-  let corrienteAccountData;
+  let ahorroAccountData = null;
+  let corrienteAccountData = null;
+  let currentAccount = null;
+
+  let currentPage = 1;
+  let totalPages = 1;
 
   //Función para obtener las cuentas bancarias del usuarios
   const fetchAccounts = async () => {
@@ -75,23 +84,28 @@ document.addEventListener('DOMContentLoaded', function () {
   };
 
   // Función para obtener las transacciones de la cuenta seleccionada
-  const fetchTransactions = async (account) => {
+  const fetchTransactions = async (account, page = 1) => {
     document.getElementById('loader').style.display = 'block';
     document.getElementById('section-transaction').style.display = 'none';
 
+    currentAccount = account;
+
     try {
-      const res = await fetch(`/api/v1/transaction/${account}/transactions`, {
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${getCookie('token')}`,
-          'Content-Type': 'application/json',
-        },
-      });
+      const res = await fetch(
+        `/api/v1/transaction/${account}/transactions?page=${page}&limit=5`,
+        {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${getCookie('token')}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
 
       const data = await res.json();
 
       if (res.status === 200) {
-        const recentTransactions = data
+        const recentTransactions = data.transactions
           .sort((a, b) => new Date(b.date) - new Date(a.date))
           .slice(0, 5)
           .map((t) => ({
@@ -151,12 +165,33 @@ document.addEventListener('DOMContentLoaded', function () {
             }
           });
         });
+
+        totalPages = Math.ceil(data.pagination.total / data.pagination.limit);
+
+        updatePaginationControls();
       }
     } catch (error) {
       console.error('Error al obtener las transacciones: ', error.message);
     } finally {
       document.getElementById('loader').style.display = 'none';
       document.getElementById('section-transaction').style.display = 'block';
+    }
+  };
+
+  // Función para actualizar los controles de paginación
+  const updatePaginationControls = async () => {
+    pageNumberEl.textContent = currentPage;
+
+    if (currentPage <= 1) {
+      btnPrev.classList.add('opacity-50', 'pointer-events-none');
+    } else {
+      btnPrev.classList.remove('opacity-50', 'pointer-events-none');
+    }
+
+    if (currentPage >= totalPages) {
+      btnNext.classList.add('opacity-50', 'pointer-events-none');
+    } else {
+      btnNext.classList.remove('opacity-50', 'pointer-events-none');
     }
   };
 
@@ -190,6 +225,20 @@ document.addEventListener('DOMContentLoaded', function () {
     animateNumber(balanceAccount, 0, accountData.balance, 600);
 
     fetchTransactions(accountNumber);
+  });
+
+  btnPrev.addEventListener('click', () => {
+    if (currentPage > 1) {
+      currentPage--;
+      fetchTransactions(currentAccount, currentPage);
+    }
+  });
+
+  btnNext.addEventListener('click', () => {
+    if (currentPage < totalPages) {
+      currentPage++;
+      fetchTransactions(currentAccount, currentPage);
+    }
   });
 
   fetchAccounts();

@@ -60,7 +60,7 @@
 
   <!-- Sección monitoriar saldo -->
   <section class="lg:px-7">
-    <divs
+    <div
       class="flex flex-col sm:flex-row justify-between items-center gap-5 bg-[#3A1F54] w-full sm:h-[150px] rounded-xl p-6"
     >
       <div class="space-y-2">
@@ -68,7 +68,10 @@
           <p class="text-2xl font-bold text-white text-center sm:text-left">
             Monitorear
           </p>
-          <p id="text-account" class="text-base font-normal text-white text-center sm:text-left">
+          <p
+            id="text-account"
+            class="text-base font-normal text-white text-center sm:text-left"
+          >
             Cuenta de ahorros
           </p>
         </div>
@@ -89,7 +92,7 @@
           >$41,382.80</span
         >
       </div>
-    </divs>
+    </div>
   </section>
 
   <!-- Sección tabla historial transacciones -->
@@ -116,7 +119,10 @@
     <!-- Paginacioón de la tabla -->
     <div class="flex justify-between border-t pt-5">
       <!-- Atras -->
-      <div class="flex gap-x-2 items-center cursor-pointer">
+      <div
+        id="btn-prev"
+        class="flex gap-x-2 items-center hover:bg-slate-100 p-2 rounded-xl cursor-pointer"
+      >
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="20"
@@ -133,13 +139,17 @@
 
       <!-- Página -->
       <div
+        id="page-number"
         class="flex items-center justify-center w-10 h-10 bg-gray-100 rounded-lg"
       >
         <p class="text-sm font-medium">1</p>
       </div>
 
       <!-- Siguiente -->
-      <div class="flex gap-x-2 items-center cursor-pointer">
+      <div
+        id="btn-next"
+        class="flex gap-x-2 items-center hover:bg-slate-100 p-2 rounded-xl cursor-pointer"
+      >
         <p>Siguiente</p>
         <svg
           xmlns="http://www.w3.org/2000/svg"

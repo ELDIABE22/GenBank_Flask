@@ -25,13 +25,30 @@ class TransactionService():
             raise Exception(f"Error al registrar la transacción: {ex}")
         
     @classmethod
-    def account_transactions_service(cls, account):
+    def account_transactions_service(cls, account, page=1, limit=10):
         try:
+            offset = (page - 1) * limit
             transactions = db.session.execute(
-                text("SELECT * FROM vw_account_transactions WHERE account = :account"),
-                {'account': account}
+                text("""
+                    SELECT * FROM vw_account_transactions 
+                    WHERE account = :account 
+                    LIMIT :limit OFFSET :offset
+                """),
+                {'account': account, 'limit': limit, 'offset': offset}
             ).mappings().all()
 
-            return transactions
+            # Obtener el total de transacciones sin paginar
+            total_result = db.session.execute(
+            text("""
+                SELECT COUNT(*) as total 
+                FROM vw_account_transactions 
+                WHERE account = :account
+            """),
+            {'account': account}
+            )
+            
+            total = total_result.scalar()
+
+            return transactions, total
         except Exception as ex:
             raise Exception(f"Error al obtener las transacciones de la cuenta: {ex}")
