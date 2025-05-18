@@ -275,3 +275,34 @@ export const validateRegister = (validate, data, stepNumber) => {
       break;
   }
 };
+
+export const validateDeposit = (form, handleSubmit, data) => {
+  const validate = new window.JustValidate(form);
+
+  const { amount, modalContainer } = data;
+
+  validate
+    .addField(amount, [
+      {
+        rule: 'integer',
+        errorMessage: 'El campo tiene que ser numérico',
+      },
+      {
+        rule: 'required',
+        errorMessage: 'Requerido',
+      },
+      {
+        rule: 'minNumber',
+        value: 500,
+        errorMessage: 'El deposito mínimo es de 500',
+      },
+      {
+        rule: 'maxNumber',
+        value: 2000000,
+        errorMessage: 'El deposito no puede superar los 2,000,000',
+      },
+    ])
+    .onSuccess(() => {
+      handleSubmit(amount.value, modalContainer);
+    });
+};

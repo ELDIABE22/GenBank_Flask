@@ -175,13 +175,16 @@ document.addEventListener('DOMContentLoaded', () => {
   // Función para obtener las últimas 5 transacciones del usuario
   const fetchTransaction = async (account) => {
     try {
-      const res = await fetch(`/api/v1/transaction/${account}/transactions?&limit=5`, {
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${getCookie('token')}`,
-          'Content-Type': 'application/json',
-        },
-      });
+      const res = await fetch(
+        `/api/v1/transaction/${account}/transactions?&limit=5`,
+        {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${getCookie('token')}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
       const data = await res.json();
 
       const recentTransactions = data.transactions
@@ -245,6 +248,19 @@ document.addEventListener('DOMContentLoaded', () => {
           userData.first_name.split(' ')[0]
         }`
       );
+    }
+  };
+
+  // Función para cambiar el índice z de dos elementos de tarjeta para traer uno al frente
+  const toggleZIndex = (cardToShow, cardToHide) => {
+    if (cardToShow.classList.contains('z-10')) {
+      return;
+    } else {
+      cardToShow.classList.remove('z-0');
+      cardToShow.classList.add('z-10');
+
+      cardToHide.classList.remove('z-10');
+      cardToHide.classList.add('z-0');
     }
   };
 
@@ -417,16 +433,3 @@ document.addEventListener('DOMContentLoaded', () => {
 
   fetchAccounts();
 });
-
-// Función para cambiar el índice z de dos elementos de tarjeta para traer uno al frente
-const toggleZIndex = (cardToShow, cardToHide) => {
-  if (cardToShow.classList.contains('z-10')) {
-    return;
-  } else {
-    cardToShow.classList.remove('z-0');
-    cardToShow.classList.add('z-10');
-
-    cardToHide.classList.remove('z-10');
-    cardToHide.classList.add('z-0');
-  }
-};

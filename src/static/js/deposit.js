@@ -1,5 +1,6 @@
 import { getCookie } from './token.js';
 import { animateNumber } from './utils.js';
+import { validateDeposit } from './validations.js';
 
 document.addEventListener('DOMContentLoaded', () => {
   const selectAccount = document.getElementById('accounts');
@@ -11,8 +12,11 @@ document.addEventListener('DOMContentLoaded', () => {
     .querySelector('p');
   const btnPrev = document.getElementById('btn-prev');
   const btnNext = document.getElementById('btn-next');
+  const btnNewDeposit = document.getElementById('btn-new-deposit');
 
   const userData = JSON.parse(localStorage.getItem('userData'));
+
+  const notyf = new window.Notyf();
 
   let ahorroAccountData = null;
   let corrienteAccountData = null;
@@ -164,6 +168,41 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
+  const handleDeposit = async (amount, modalContainer) => {
+    document
+      .querySelectorAll('#form-deposit input, #form-deposit button')
+      .forEach((el) => (el.disabled = true));
+
+    try {
+      const res = await fetch(`/api/v1/deposit/${selectAccount.value}`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${getCookie('token')}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          amount,
+        }),
+      });
+
+      const message = await res.json();
+
+      if (res.status === 200) {
+        fetchAccounts();
+        notyf.success(message);
+        modalContainer.remove();
+      } else {
+        notyf.error(message);
+      }
+    } catch (error) {
+      console.error('Error al realizar el depósito:', error);
+    } finally {
+      document
+        .querySelectorAll('#form-deposit input, #form-deposit button')
+        .forEach((el) => (el.disabled = false));
+    }
+  };
+
   // Función para actualizar los controles de paginación
   const updatePaginationControls = async () => {
     pageNumberEl.textContent = currentPage;
@@ -225,6 +264,87 @@ document.addEventListener('DOMContentLoaded', () => {
       currentPage++;
       fetchDeposits(currentAccount, currentPage);
     }
+  });
+
+  // Evento para mostrar el modal de realizar deposito
+  btnNewDeposit.addEventListener('click', () => {
+    btnNewDeposit.blur();
+    
+    const modalContainer = document.createElement('div');
+    modalContainer.id = 'modalAccountCorriente';
+    modalContainer.className =
+      'absolute inset-0 flex justify-center items-center z-[100] bg-black/60';
+    modalContainer.innerHTML = `
+      <form id="form-deposit" class="bg-white rounded-lg shadow-xl p-6 w-full max-w-lg">
+        <h2 class="text-2xl font-bold text-gray-800 text-center mb-2">
+          ¡Hora de hacer tu depósito!
+        </h2>
+        <p class="text-gray-600 text-center mb-4">
+          Indica la cantidad que deseas depositar en tu cuenta. Es rápido, seguro
+          y estará disponible al instante.
+        </p>
+
+        <div class="flex justify-center mb-6">
+          <img
+            src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
+            alt="Depósito"
+            class="w-24 h-24"
+          />
+        </div>
+
+        <div class="mb-6">
+          <label
+            for="depositAmount"
+            class="block text-gray-700 font-semibold mb-2 text-center"
+          >
+            ¿Cuánto deseas depositar?
+          </label>
+          <input
+            type="number"
+            id="depositAmount"
+            min="1"
+            step="0.01"
+            placeholder="Ej: 50000"
+            class="mx-auto block w-40 text-center border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          />
+        </div>
+
+        <div class="bg-green-50 p-4 rounded-lg text-green-700 text-sm mb-6">
+          <p>✔ Tu depósito se acreditará inmediatamente</p>
+          <p>✔ Recibirás una notificación por correo</p>
+          <p>✔ Transacción segura y protegida</p>
+        </div>
+
+        <div class="flex justify-center space-x-4">
+          <button type="submit" id="confirmDepositBtn" class="btn">
+            <div class="loader_button"></div>
+            <span>Confirmar depósito</span>
+          </button>
+          <button id="cancelDepositBtn" class="btn bg-red-500 hover:bg-red-600">
+            Cancelar
+          </button>
+        </div>
+
+        <p class="text-gray-400 text-xs text-center mt-4">
+          Tus datos están protegidos con encriptación bancaria de nivel avanzado.
+        </p>
+      </form>
+    `;
+
+    document.getElementById('body-layout').appendChild(modalContainer);
+
+    const form = modalContainer.querySelector('#form-deposit');
+    const amount = modalContainer.querySelector('#depositAmount');
+
+    // Evento para cerrar el modal
+    document
+      .getElementById('cancelDepositBtn')
+      .addEventListener('click', () => {
+        document.getElementById('body-layout').removeChild(modalContainer);
+      });
+
+    // Llamar función para validar el formulario y realizar el depósito
+    validateDeposit(form, handleDeposit, { amount, modalContainer });
   });
 
   fetchAccounts();
