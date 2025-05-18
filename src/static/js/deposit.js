@@ -269,13 +269,13 @@ document.addEventListener('DOMContentLoaded', () => {
   // Evento para mostrar el modal de realizar deposito
   btnNewDeposit.addEventListener('click', () => {
     btnNewDeposit.blur();
-    
+
     const modalContainer = document.createElement('div');
-    modalContainer.id = 'modalAccountCorriente';
+    modalContainer.id = 'modal-deposit';
     modalContainer.className =
-      'absolute inset-0 flex justify-center items-center z-[100] bg-black/60';
+      'absolute inset-0 flex justify-center items-center z-[100] bg-black/60 transition-opacity duration-300 opacity-0';
     modalContainer.innerHTML = `
-      <form id="form-deposit" class="bg-white rounded-lg shadow-xl p-6 w-full max-w-lg">
+      <form id="form-deposit" class="bg-white rounded-lg shadow-xl p-6 w-full max-w-lg scale-95 transition-transform duration-300">
         <h2 class="text-2xl font-bold text-gray-800 text-center mb-2">
           ¡Hora de hacer tu depósito!
         </h2>
@@ -336,11 +336,24 @@ document.addEventListener('DOMContentLoaded', () => {
     const form = modalContainer.querySelector('#form-deposit');
     const amount = modalContainer.querySelector('#depositAmount');
 
+    // Animación de entrada
+    setTimeout(() => {
+      modalContainer.classList.remove('opacity-0');
+      modalContainer.classList.add('opacity-100');
+      form.classList.remove('scale-95');
+      form.classList.add('scale-100');
+    }, 10);
+
     // Evento para cerrar el modal
     document
       .getElementById('cancelDepositBtn')
       .addEventListener('click', () => {
-        document.getElementById('body-layout').removeChild(modalContainer);
+        modalContainer.classList.remove('opacity-100');
+        modalContainer.classList.add('opacity-0');
+
+        setTimeout(() => {
+          document.getElementById('body-layout').removeChild(modalContainer);
+        }, 10);
       });
 
     // Llamar función para validar el formulario y realizar el depósito

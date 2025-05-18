@@ -306,3 +306,54 @@ export const validateDeposit = (form, handleSubmit, data) => {
       handleSubmit(amount.value, modalContainer);
     });
 };
+
+export const validateGenerateResetPassword = (form, handleSubmit, data) => {
+  const validate = new window.JustValidate(form);
+
+  const { email, modalContainer } = data;
+
+  validate
+    .addField(email, [
+      { rule: 'email' },
+      { rule: 'required', errorMessage: 'Requerido' },
+    ])
+    .onSuccess(() => {
+      handleSubmit(email.value, modalContainer);
+    });
+};
+
+export const validateResetPassword = (form, handleSubmit) => {
+  const validate = new window.JustValidate(form);
+
+  validate
+    .addField('#password', [
+      {
+        rule: 'required',
+        errorMessage: 'Requerido',
+      },
+      {
+        rule: 'minLength',
+        value: 6,
+        errorMessage: 'Mínimo 6 caracteres.',
+      },
+      {
+        rule: 'maxLength',
+        value: 15,
+        errorMessage: 'Máximo 15 caracteres',
+      },
+    ])
+    .addField('#confirm_password', [
+      {
+        rule: 'required',
+        errorMessage: 'Requerido',
+      },
+      {
+        validator: (value) =>
+          value === document.querySelector('#password').value,
+        errorMessage: 'Las contraseñas no coinciden.',
+      },
+    ])
+    .onSuccess(() => {
+      handleSubmit();
+    });
+};

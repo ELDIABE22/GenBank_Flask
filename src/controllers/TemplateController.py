@@ -14,6 +14,10 @@ def login_route():
 def register_route():
     return render_template('register.html') 
 
+@main.route('/auth/password/reset')
+def reset_password_route():
+    return render_template('reset_password.html')
+
 @main.route('/dashboard')
 def dashboard_route():
     return render_template('dashboard.html') 

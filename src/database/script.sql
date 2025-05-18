@@ -55,6 +55,18 @@ CREATE TABLE deposits (
     INDEX idx_account (account)
 );	
 
+CREATE TABLE reset_password_tokens (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_cc CHAR(10) NOT NULL,
+    token VARCHAR(255) NOT NULL,
+    expiration DATETIME NOT NULL,
+    used BOOLEAN DEFAULT FALSE,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_cc) REFERENCES users(cc) ON DELETE CASCADE,
+    INDEX idx_token (token),
+    INDEX idx_user_cc (user_cc)
+);
+
 DELIMITER $$
 
 -- Procedimiento almacenado para registrar un usuario
@@ -202,6 +214,125 @@ BEGIN
         END IF;
 	END IF;
     SET @p_message = p_message;
+END $$
+
+-- Procedimiento almacenado para generar un token de restablecimiento de contraseña
+CREATE PROCEDURE sp_generate_reset_password_token (
+    IN p_email VARCHAR(255),
+    OUT p_token VARCHAR(255),
+    OUT p_message VARCHAR(255)
+)
+BEGIN
+    DECLARE v_cc CHAR(10);
+    DECLARE token_exists INT DEFAULT 0;
+
+    -- Buscar el cc del usuario basado en el email
+    SELECT cc INTO v_cc
+    FROM users
+    WHERE email = p_email
+    LIMIT 1;
+
+    -- Verificar que el usuario exista
+    IF v_cc IS NULL THEN
+        SET p_message = 'El correo no existe.';
+        SET p_token = NULL;
+    ELSE
+        -- Verificar si ya hay un token activo y no usado para este usuario (no expirado)
+        SELECT COUNT(*) INTO token_exists
+        FROM reset_password_tokens
+        WHERE user_cc = v_cc AND used = FALSE AND expiration > NOW();
+
+        IF token_exists > 0 THEN
+            SET p_message = 'Ya existe un token activo para este usuario.';
+            SET p_token = NULL;
+        ELSE
+            -- Generar token aleatorio de 64 caracteres hexadecimales (32 bytes)
+            SET p_token = LOWER(CONCAT(
+                LPAD(CONV(FLOOR(RAND() * POW(16,8)), 10, 16), 8, '0'),
+                LPAD(CONV(FLOOR(RAND() * POW(16,8)), 10, 16), 8, '0'),
+                LPAD(CONV(FLOOR(RAND() * POW(16,8)), 10, 16), 8, '0'),
+                LPAD(CONV(FLOOR(RAND() * POW(16,8)), 10, 16), 8, '0')
+            ));
+
+            -- Insertar el token en la tabla con expiración a 1 hora
+            INSERT INTO reset_password_tokens (user_cc, token, expiration, used, created_at)
+            VALUES (v_cc, p_token, DATE_ADD(NOW(), INTERVAL 30 MINUTE), FALSE, NOW());
+
+            SET p_message = 'Se ha generado un enlace de restablecimiento. Por favor, revisa tu correo para continuar con el proceso.';
+        END IF;
+    END IF;
+END $$
+
+-- Procedimiento almacenado para validar el token de restablecimiento de contraseña
+CREATE PROCEDURE sp_validate_reset_password_token (
+    IN p_token VARCHAR(255),
+    OUT p_message VARCHAR(255)
+)
+BEGIN
+    DECLARE v_user_cc CHAR(10);
+
+    SET p_message = 'Token no válido.';
+
+    -- Verificar si el token existe, no ha sido usado y no ha expirado
+    SELECT user_cc INTO v_user_cc
+    FROM reset_password_tokens
+    WHERE token = p_token
+    AND used = FALSE
+    AND expiration > NOW()
+    LIMIT 1;
+
+    IF v_user_cc IS NOT NULL THEN
+        SET p_message = 'Token válido.';
+    ELSE
+        IF NOT EXISTS (SELECT 1 FROM reset_password_tokens WHERE token = p_token) THEN
+            SET p_message = 'Token no encontrado.';
+        ELSEIF EXISTS (SELECT 1 FROM reset_password_tokens WHERE token = p_token AND used = TRUE) THEN
+            SET p_message = 'Token ya utilizado.';
+        ELSEIF EXISTS (SELECT 1 FROM reset_password_tokens WHERE token = p_token AND expiration <= NOW()) THEN
+            SET p_message = 'Token expirado.';
+        END IF;
+    END IF;
+END $$
+
+-- Procedimiento almacenado para restablecer la contraseña
+CREATE PROCEDURE sp_reset_password (
+    IN p_token VARCHAR(255),
+    IN p_new_password VARCHAR(255),
+    OUT p_message VARCHAR(255)
+)
+BEGIN
+    DECLARE v_user_cc CHAR(10);
+    
+    -- Verificar si el token es válido y no ha expirado ni ha sido usado
+    SELECT user_cc INTO v_user_cc
+    FROM reset_password_tokens
+    WHERE token = p_token AND used = FALSE AND expiration > NOW()
+    LIMIT 1;
+
+    IF v_user_cc IS NOT NULL THEN
+        -- Actualizar la contraseña del usuario
+        UPDATE users
+        SET password = p_new_password
+        WHERE cc = v_user_cc;
+
+        -- Marcar el token como usado
+        UPDATE reset_password_tokens
+        SET used = TRUE
+        WHERE token = p_token;
+
+        SET p_message = 'Contraseña actualizada correctamente.';
+    ELSE
+        -- Manejo de errores en caso de token inválido
+        IF NOT EXISTS (SELECT 1 FROM reset_password_tokens WHERE token = p_token) THEN
+            SET p_message = 'Token no encontrado.';
+        ELSEIF EXISTS (SELECT 1 FROM reset_password_tokens WHERE token = p_token AND used = TRUE) THEN
+            SET p_message = 'Token ya utilizado.';
+        ELSEIF EXISTS (SELECT 1 FROM reset_password_tokens WHERE token = p_token AND expiration <= NOW()) THEN
+            SET p_message = 'Token expirado.';
+        ELSE
+            SET p_message = 'Token no válido.';
+        END IF;
+    END IF;
 END $$
 
 -- Procedimiento almacenado para generar número de cuenta único

@@ -269,9 +269,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const modalContainer = document.createElement('div');
     modalContainer.id = 'modalAccountCorriente';
     modalContainer.className =
-      'absolute inset-0 flex justify-center items-center z-[100] bg-black/60';
+      'absolute inset-0 flex justify-center items-center z-[100] bg-black/60 transition-opacity duration-300 opacity-0';
     modalContainer.innerHTML = `
-    <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-lg">
+    <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-lg scale-95 transition-transform duration-300">
         <h2 class="text-2xl font-bold text-gray-800 text-center mb-4">
           ¡Estás a un paso de crear tu cuenta corriente!
         </h2>
@@ -322,6 +322,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const termsCheckbox = modalContainer.querySelector('#termsCheckbox');
     const createAccountBtn = modalContainer.querySelector('#createAccountBtn');
 
+    // Animación de entrada
+    setTimeout(() => {
+      modalContainer.classList.remove('opacity-0');
+      modalContainer.classList.add('opacity-100');
+    }, 10);
+
     // Evento para habilitar el botón de crear cuenta
     termsCheckbox.addEventListener('change', (e) => {
       createAccountBtn.disabled = !e.target.checked;
@@ -329,7 +335,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Evento para cerrar el modal
     document.getElementById('closeModal').addEventListener('click', () => {
-      document.getElementById('body-layout').removeChild(modalContainer);
+      modalContainer.classList.remove('opacity-100');
+      modalContainer.classList.add('opacity-0');
+
+      setTimeout(() => {
+        document.getElementById('body-layout').removeChild(modalContainer);
+      }, 10);
     });
 
     // Evento para crear la cuenta

@@ -56,3 +56,39 @@ def register():
     message = AuthService.register_user(_user)
 
     return jsonify({'message': message}), 201 if message == 'Cuenta creada exitosamente.' else 400
+
+@main.route('/password/request-reset', methods=['POST'])
+def generate_reset_password_token_controller():
+    email = request.json['email']
+
+    _user = User(email=email)
+
+    message = AuthService.generate_reset_password_token_service(_user)
+
+    if message == 'Se ha generado un enlace de restablecimiento. Por favor, revisa tu correo para continuar con el proceso.':
+        return jsonify({'message': message}), 200
+    else:
+        return jsonify({'message': message}), 404
+
+@main.route('/password/validate-reset/<token>', methods=['GET'])
+def validate_reset_password_token_controller(token):
+    message = AuthService.validate_reset_password_token_service(token)
+
+    if message == 'Token válido.':
+        return jsonify({'message': message}), 200
+    else:
+        return jsonify({'message': message}), 400
+
+@main.route('/password/reset', methods=['POST'])
+def reset_password_controller():
+    token = request.json['token']
+    password = request.json['password']
+
+    hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+
+    message = AuthService.reset_password_service(token, hashed_password.decode('utf-8'))
+
+    if message == 'Contraseña actualizada correctamente.':
+        return jsonify({'message': message}), 200
+    else:
+        return jsonify({'message': message}), 400

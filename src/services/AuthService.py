@@ -1,6 +1,9 @@
 import bcrypt
 from sqlalchemy import text
+
+# Config
 from src.database.db import db
+from src.services.EmailService import EmailService
 
 # Models
 from src.models.User import User
@@ -52,3 +55,76 @@ class AuthService():
             return message
         except Exception as ex:
             raise Exception(f"Error al registrar el usuario: {ex}")
+
+    @classmethod
+    def generate_reset_password_token_service(cls, user):
+        try:
+            db.session.execute(text("""
+                CALL sp_generate_reset_password_token(
+                    :email, @p_token, @p_message
+                )
+            """), {
+                'email': user.email,
+            })
+
+            result = db.session.execute(text("SELECT @p_token, @p_message"))
+            row = result.fetchone()
+            token = row[0]
+            message = row[1]
+
+            if token is not None:
+                EmailService.enviar_email(
+                    destinatario=user.email,
+                    asunto="Restablecimiento de tu contraseña - GenBank",
+                    plantilla="email/reset_password_email.html",
+                    contexto={
+                        'reset_link': 'http://localhost:5000/auth/password/reset?token=' + token,
+                    }
+                )
+
+            db.session.commit()
+
+            return message
+        except Exception as ex:
+            raise Exception(f"Error al generar el token de restablecimiento de contraseña: {ex}")
+
+    @classmethod
+    def validate_reset_password_token_service(cls, token):
+        try:
+            db.session.execute(text("""
+                CALL sp_validate_reset_password_token(
+                    :token, @p_message
+                )
+            """), {
+                'token': token,
+            })
+
+            result = db.session.execute(text("SELECT @p_message"))
+            message = result.fetchone()[0]
+
+            db.session.commit()
+
+            return message
+        except Exception as ex:
+            raise Exception(f"Error al validar el token de restablecimiento: {ex}")
+
+    @classmethod
+    def reset_password_service(cls, token, new_password):
+        try:
+            db.session.execute(text("""
+                CALL sp_reset_password(
+                    :token, :new_password, @p_message
+                )
+            """), {
+                'token': token,
+                'new_password': new_password
+            })
+
+            result = db.session.execute(text("SELECT @p_message"))
+            message = result.fetchone()[0]
+
+            db.session.commit()
+
+            return message
+        except Exception as ex:
+            raise Exception(f"Error al restablecer la contraseña: {ex}")
