@@ -1,5 +1,6 @@
 from flask import Flask
 from src.database.db import db, ma, configure_db
+from src.utils.mail import configure_mail
 
 # Routes
 from .controllers import AuthController
@@ -13,6 +14,9 @@ def init_app():
 
     # Configura la base de datos
     configure_db(app)
+
+    # Configura el correo 
+    configure_mail(app)
     
     # Blueprints
 
