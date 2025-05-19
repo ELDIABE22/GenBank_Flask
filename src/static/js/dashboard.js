@@ -346,6 +346,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // Evento para crear la cuenta
     createAccountBtn.addEventListener('click', async () => {
       if (!createAccountBtn.disabled) {
+        termsCheckbox.disabled = true;
+        createAccountBtn.disabled = true;
+        document.getElementById('closeModal').disabled = true;
+
         try {
           const res = await fetch('/api/v1/account/current', {
             method: 'POST',
@@ -366,9 +370,15 @@ document.addEventListener('DOMContentLoaded', () => {
             modalContainer.remove();
           } else {
             notyf.error(result.message);
+            termsCheckbox.disabled = false;
+            createAccountBtn.disabled = false;
+            document.getElementById('closeModal').disabled = false;
           }
         } catch (error) {
           console.error('Error al crear cuenta corriente:', error);
+        } finally {
+          termsCheckbox.disabled = false;
+          createAccountBtn.disabled = false;
         }
       }
     });

@@ -1,6 +1,12 @@
 from sqlalchemy import text
 from src.database.db import db
 
+# Models
+from src.models.Account import Account
+from src.models.User import User
+# Services
+from src.services.EmailService import EmailService
+
 class TransactionService():
     @classmethod
     def transaction_service(cls, transaction):
@@ -15,10 +21,25 @@ class TransactionService():
                 'amount': transaction.amount
             })
 
+            userFilter = User.query.join(Account, User.cc == Account.user) \
+                .filter(Account.account_number == transaction.from_account) \
+                .first()
+
             result = db.session.execute(text("SELECT @p_message"))
             message = result.fetchone()[0]
 
             db.session.commit()
+
+            if message == "Transferencia realizada con éxito.":
+                EmailService.enviar_email(
+                    destinatario=userFilter.email,
+                    asunto="Transferencia Realizada",
+                    plantilla="email/transfer_email.html",
+                    contexto={
+                        "user_name": userFilter.first_name,
+                        "dashboard_link": "http://localhost:5000/transaction",
+                    }
+                )
 
             return message
         except Exception as ex:

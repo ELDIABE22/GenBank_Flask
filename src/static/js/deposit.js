@@ -47,16 +47,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const lastFourDigits = ahorroAccountData.account_number.slice(-4);
 
+        selectAccount.innerHTML = '';
+
+        const addedAccounts = new Set();
+
         data.forEach((account) => {
-          const option = document.createElement('option');
-          option.value = account.account_number;
-          option.textContent = account.account_type;
+          if (!addedAccounts.has(account.account_number)) {
+            addedAccounts.add(account.account_number);
 
-          if (account.account_type.toLowerCase() === 'ahorros') {
-            option.selected = true;
+            const option = document.createElement('option');
+            option.value = account.account_number;
+            option.textContent = account.account_type;
+
+            if (account.account_type.toLowerCase() === 'ahorros') {
+              option.selected = true;
+            }
+
+            selectAccount.appendChild(option);
           }
-
-          selectAccount.appendChild(option);
         });
 
         textAccount.textContent = 'Cuenta de Ahorros';
@@ -348,6 +356,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document
       .getElementById('cancelDepositBtn')
       .addEventListener('click', () => {
+        amount.value = '';
         modalContainer.classList.remove('opacity-100');
         modalContainer.classList.add('opacity-0');
 
@@ -356,7 +365,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 10);
       });
 
-    // Llamar función para validar el formulario y realizar el depósito
     validateDeposit(form, handleDeposit, { amount, modalContainer });
   });
 

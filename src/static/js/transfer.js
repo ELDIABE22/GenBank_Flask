@@ -83,9 +83,11 @@ document.addEventListener('DOMContentLoaded', () => {
         fetchAccounts();
         notyf.success(message);
 
+        form.reset();
+
         setTimeout(() => {
           window.location.href = '/dashboard';
-        }, 500);
+        }, 200);
       } else {
         notyf.error(message);
       }
