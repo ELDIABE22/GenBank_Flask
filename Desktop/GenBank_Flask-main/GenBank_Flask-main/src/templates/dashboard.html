@@ -1,0 +1,375 @@
+{% extends 'layout.html' %}
+<!-- Título -->
+{% block title %} Panel {% endblock %}
+<!-- Contenido -->
+{% block content %}
+<div id="loader" class="loader"></div>
+
+<div id="section-dashboard" class="flex justify-between">
+  <!-- Sección Izquierda -->
+  <div class="p-10 w-full space-y-8">
+    <!-- Icono open sidebar -->
+    <svg
+      id="sidebar-open"
+      xmlns="http://www.w3.org/2000/svg"
+      width="32"
+      height="32"
+      fill="#080808"
+      viewBox="0 0 256 256"
+      class="cursor-pointer hidden"
+    >
+      <path
+        d="M224,128a8,8,0,0,1-8,8H40a8,8,0,0,1,0-16H216A8,8,0,0,1,224,128ZM40,72H216a8,8,0,0,0,0-16H40a8,8,0,0,0,0,16ZM216,184H40a8,8,0,0,0,0,16H216a8,8,0,0,0,0-16Z"
+      ></path>
+    </svg>
+
+    <!-- Sección de bienvenida -->
+    <section>
+      <h2 class="text-3xl sm:text-4xl font-semibold mb-3">
+        Bienvenido,
+        <span id="welcome-name" class="gradient-text">Jerónimo</span>
+      </h2>
+      <p class="text-xs sm:text-sm text-slate-500">
+        Administre su cuenta y transacciones de manera fácil y eficiente.
+      </p>
+    </section>
+
+    <!-- Sección balance de la cuenta -->
+    <section
+      class="flex flex-col sm:flex-row items-center justify-center max-w-6xl gap-5 p-6 rounded-xl border shadow-lg"
+    >
+      <!-- Contenedor del gráfico -->
+      <div class="w-[140px] h-[140px]">
+        <canvas id="doughnutChart"></canvas>
+      </div>
+
+      <div class="w-full flex justify-center sm:justify-between items-center">
+        <div class="h-full flex flex-col sm:justify-between gap-y-6">
+          <p id="bank-accounts-number" class="font-medium hidden sm:block">
+            0 Cuentas Bancarias
+          </p>
+          <div>
+            <p class="text-sm text-slate-500 text-center sm:text-left">
+              Saldo Total
+            </p>
+            <span id="balance" class="font-bold text-3xl gradient-text"></span>
+          </div>
+        </div>
+
+        <img
+          src="{{ url_for('static', filename='images/creditCard.gif') }}"
+          alt="pay"
+          class="hidden sm:inline"
+        />
+      </div>
+    </section>
+
+    <!-- Sección tabla de transacciones recientes -->
+    <section class="space-y-8">
+      <div
+        class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-y-5"
+      >
+        <p class="text-lg sm:text-2xl font-bold">Transacciones recientes</p>
+        <a href="/transaction">
+          <button
+            class="btn outline outline-none sm:max-w-[130px] min-w-full shadow-md"
+          >
+            Ver todos
+          </button>
+        </a>
+      </div>
+
+      <!-- Tabla -->
+      <div class="w-full max-w-6xl mx-auto overflow-x-auto">
+        <table id="table-transaction" class="w-full rounded-lg text-left">
+          <thead class="bg-[#0047a3] text-white">
+            <tr>
+              <th class="py-3 px-4">Desde</th>
+              <th class="py-3 px-4">Hacia</th>
+              <th class="py-3 px-4">Monto</th>
+              <th class="py-3 px-4">Estado</th>
+              <th class="py-3 px-4">Fecha</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <!-- Sección Derecha -->
+  <aside
+    class="hidden lg:block w-full max-w-[400px] h-screen bg-white border-l"
+  >
+    <!-- Perfil -->
+    <div class="relative">
+      <div class="gradient w-full h-[150px]"></div>
+      <div class="absolute top-20 w-full p-6 space-y-5">
+        <!-- Foto de perfil -->
+        <div
+          class="w-32 h-32 rounded-full border-4 border-white shadow-lg shadow-black/30 bg-white"
+        >
+          <img
+            src="https://cdn-icons-png.flaticon.com/512/4715/4715330.png"
+            alt="user-profile"
+            class="w-full h-full object-cover"
+          />
+        </div>
+
+        <!-- Icono sign-out -->
+        <div class="absolute top-[70px] right-5" onclick="signOut()">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            fill="#c60017"
+            viewBox="0 0 256 256"
+            class="cursor-pointer hover:scale-110 transform duration-300 active:scale-90 sign-out"
+          >
+            <path
+              d="M120,216a8,8,0,0,1-8,8H48a8,8,0,0,1-8-8V40a8,8,0,0,1,8-8h64a8,8,0,0,1,0,16H56V208h56A8,8,0,0,1,120,216Zm109.66-93.66-40-40a8,8,0,0,0-11.32,11.32L204.69,120H112a8,8,0,0,0,0,16h92.69l-26.35,26.34a8,8,0,0,0,11.32,11.32l40-40A8,8,0,0,0,229.66,122.34Z"
+            ></path>
+          </svg>
+        </div>
+
+        <!-- Datos del perfil -->
+        <div>
+          <p
+            id="user-name-profile"
+            class="font-semibold text-2xl text-[#3a1f54] mb-2"
+          >
+            Usuario
+          </p>
+          <p id="user-cc-profile" class="text-slate-500 text-sm">########</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tarjetas -->
+    <div class="p-6 mt-40 space-y-8">
+      <div class="flex justify-between items-center">
+        <h2 class="font-semibold text-lg">Mis cuentas</h2>
+        <span
+          id="new-account"
+          class="text-[#3a1f54] text-sm cursor-pointer hover:text-[#3a1f54c0]"
+          >+ Agregar cuenta</span
+        >
+      </div>
+
+      <div
+        class="relative flex flex-1 flex-col items-center justify-center gap-5"
+      >
+        <!-- Tarjeta 1 -->
+        <div id="savings-account" class="relative z-10">
+          <div class="flex w-[316px] h-[190px]">
+            <div
+              class="relative w-[75%] h-full flex flex-col justify-between bg-[#0047a3] rounded-l-[20px] p-5 z-20"
+            >
+              <div class="flex justify-between">
+                <div>
+                  <h1 class="text-base font-medium text-white">GenBank</h1>
+                  <p id="balance-ahorro" class="font-medium text-white">
+                    $ 0.00
+                  </p>
+                </div>
+
+                <!-- Mostrar/Ocultar datos de la tarjeta -->
+                <div>
+                  <!-- Mostrar -->
+                  <svg
+                    id="show-card-data-ahorro"
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    fill="#FFFFFF"
+                    viewBox="0 0 256 256"
+                    cursor="pointer"
+                  >
+                    <path
+                      d="M228,175a8,8,0,0,1-10.92-3l-19-33.2A123.23,123.23,0,0,1,162,155.46l5.87,35.22a8,8,0,0,1-6.58,9.21A8.4,8.4,0,0,1,160,200a8,8,0,0,1-7.88-6.69l-5.77-34.58a133.06,133.06,0,0,1-36.68,0l-5.77,34.58A8,8,0,0,1,96,200a8.4,8.4,0,0,1-1.32-.11,8,8,0,0,1-6.58-9.21L94,155.46a123.23,123.23,0,0,1-36.06-16.69L39,172A8,8,0,1,1,25.06,164l20-35a153.47,153.47,0,0,1-19.3-20A8,8,0,1,1,38.22,99c16.6,20.54,45.64,45,89.78,45s73.18-24.49,89.78-45A8,8,0,1,1,230.22,109a153.47,153.47,0,0,1-19.3,20l20,35A8,8,0,0,1,228,175Z"
+                    ></path>
+                  </svg>
+
+                  <!-- Ocultar -->
+                  <svg
+                    id="hide-card-data-ahorro"
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    fill="#ffffff"
+                    viewBox="0 0 256 256"
+                    cursor="pointer"
+                    class="hidden"
+                  >
+                    <path
+                      d="M247.31,124.76c-.35-.79-8.82-19.58-27.65-38.41C194.57,61.26,162.88,48,128,48S61.43,61.26,36.34,86.35C17.51,105.18,9,124,8.69,124.76a8,8,0,0,0,0,6.5c.35.79,8.82,19.57,27.65,38.4C61.43,194.74,93.12,208,128,208s66.57-13.26,91.66-38.34c18.83-18.83,27.3-37.61,27.65-38.4A8,8,0,0,0,247.31,124.76ZM128,192c-30.78,0-57.67-11.19-79.93-33.25A133.47,133.47,0,0,1,25,128,133.33,133.33,0,0,1,48.07,97.25C70.33,75.19,97.22,64,128,64s57.67,11.19,79.93,33.25A133.46,133.46,0,0,1,231.05,128C223.84,141.46,192.43,192,128,192Zm0-112a48,48,0,1,0,48,48A48.05,48.05,0,0,0,128,80Zm0,80a32,32,0,1,1,32-32A32,32,0,0,1,128,160Z"
+                    ></path>
+                  </svg>
+                </div>
+              </div>
+
+              <article class="flex flex-col gap-2">
+                <div class="flex justify-between">
+                  <h1
+                    id="account-type-ahorro"
+                    class="text-xs font-medium text-white"
+                  >
+                    Ahorro
+                  </h1>
+                  <h2
+                    id="expirate-ahorro"
+                    class="text-xs font-medium text-white"
+                  >
+                    ●● / ●●
+                  </h2>
+                </div>
+                <p
+                  id="account-number-ahorro"
+                  class="text-[15px] font-medium tracking-[1.5px] text-white"
+                >
+                  ●●●● ●●●● ●●●●
+                  <span id="account-number-4-digits-ahorro" class="text-16"
+                    >●●●●</span
+                  >
+                </p>
+              </article>
+            </div>
+
+            <div
+              class="flex flex-col justify-between items-center bg-[#002966] h-full w-[25%] py-6 rounded-r-[20px]"
+            >
+              <img
+                src="{{ url_for('static', filename='images/Paypass.svg') }}"
+                alt="pay"
+                width="20"
+                height="24"
+              />
+              <img
+                src="{{ url_for('static', filename='images/visa.svg') }}"
+                alt="visa"
+                width="45"
+                height="32"
+              />
+            </div>
+            <img
+              src="{{ url_for('static', filename='images/lines.png') }}"
+              alt="lines"
+              width="316"
+              height="190"
+              class="absolute top-0 left-0 z-0"
+            />
+          </div>
+        </div>
+        <!-- Tarjeta 2 -->
+        <div
+          id="current-account"
+          class="absolute right-0 top-8 z-0 w-[90%] hidden"
+        >
+          <div class="flex w-[316px] h-[190px]">
+            <div
+              class="relative w-[75%] h-full flex flex-col justify-between bg-[#3a1f54] rounded-l-[20px] p-5 z-20"
+            >
+              <div class="flex justify-between">
+                <div>
+                  <h1 class="font-medium text-white">GenBank</h1>
+                  <p id="balance-corriente" class="font-medium text-white">
+                    $ 0.00
+                  </p>
+                </div>
+
+                <!-- Mostrar/Ocultar datos de la tarjeta -->
+                <div>
+                  <!-- Mostrar -->
+                  <svg
+                    id="show-card-data-corriente"
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    fill="#FFFFFF"
+                    viewBox="0 0 256 256"
+                    cursor="pointer"
+                  >
+                    <path
+                      d="M228,175a8,8,0,0,1-10.92-3l-19-33.2A123.23,123.23,0,0,1,162,155.46l5.87,35.22a8,8,0,0,1-6.58,9.21A8.4,8.4,0,0,1,160,200a8,8,0,0,1-7.88-6.69l-5.77-34.58a133.06,133.06,0,0,1-36.68,0l-5.77,34.58A8,8,0,0,1,96,200a8.4,8.4,0,0,1-1.32-.11,8,8,0,0,1-6.58-9.21L94,155.46a123.23,123.23,0,0,1-36.06-16.69L39,172A8,8,0,1,1,25.06,164l20-35a153.47,153.47,0,0,1-19.3-20A8,8,0,1,1,38.22,99c16.6,20.54,45.64,45,89.78,45s73.18-24.49,89.78-45A8,8,0,1,1,230.22,109a153.47,153.47,0,0,1-19.3,20l20,35A8,8,0,0,1,228,175Z"
+                    ></path>
+                  </svg>
+
+                  <!-- Ocultar -->
+                  <svg
+                    id="hide-card-data-corriente"
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    fill="#ffffff"
+                    viewBox="0 0 256 256"
+                    cursor="pointer"
+                    class="hidden"
+                  >
+                    <path
+                      d="M247.31,124.76c-.35-.79-8.82-19.58-27.65-38.41C194.57,61.26,162.88,48,128,48S61.43,61.26,36.34,86.35C17.51,105.18,9,124,8.69,124.76a8,8,0,0,0,0,6.5c.35.79,8.82,19.57,27.65,38.4C61.43,194.74,93.12,208,128,208s66.57-13.26,91.66-38.34c18.83-18.83,27.3-37.61,27.65-38.4A8,8,0,0,0,247.31,124.76ZM128,192c-30.78,0-57.67-11.19-79.93-33.25A133.47,133.47,0,0,1,25,128,133.33,133.33,0,0,1,48.07,97.25C70.33,75.19,97.22,64,128,64s57.67,11.19,79.93,33.25A133.46,133.46,0,0,1,231.05,128C223.84,141.46,192.43,192,128,192Zm0-112a48,48,0,1,0,48,48A48.05,48.05,0,0,0,128,80Zm0,80a32,32,0,1,1,32-32A32,32,0,0,1,128,160Z"
+                    ></path>
+                  </svg>
+                </div>
+              </div>
+
+              <article class="flex flex-col gap-2">
+                <div class="flex justify-between">
+                  <h1
+                    id="account-type-corriente"
+                    class="text-xs font-medium text-white"
+                  >
+                    Corriente
+                  </h1>
+                  <h2
+                    id="expirate-corriente"
+                    class="text-xs font-medium text-white"
+                  >
+                    ●● / ●●
+                  </h2>
+                </div>
+                <p
+                  id="account-number-corriente"
+                  class="text-[15px] font-medium tracking-[1.5px] text-white"
+                >
+                  ●●●● ●●●● ●●●●
+                  <span id="account-number-4-digits-corriente">●●●●</span>
+                </p>
+              </article>
+            </div>
+
+            <div
+              class="flex flex-col justify-between items-center bg-[#000000] h-full w-[25%] py-6 rounded-r-[20px]"
+            >
+              <img
+                src="{{ url_for('static', filename='images/Paypass.svg') }}"
+                alt="pay"
+                width="20"
+                height="24"
+              />
+              <img
+                src="{{ url_for('static', filename='images/visa.svg') }}"
+                alt="visa"
+                width="45"
+                height="32"
+              />
+            </div>
+            <img
+              src="{{ url_for('static', filename='images/lines.png') }}"
+              alt="lines"
+              width="316"
+              height="190"
+              class="absolute top-0 left-0 z-0"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  </aside>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script
+  type="module"
+  src="{{ url_for('static', filename='js/dashboard.js')}}"
+></script>
+{% endblock %}

@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>¡Depósito realizado con éxito!</title>
+  </head>
+  <body
+    style="
+      background-color: #f3f4f6;
+      margin: 0;
+      padding: 40px 0;
+      font-family: sans-serif;
+    "
+  >
+    <table
+      role="presentation"
+      cellpadding="0"
+      cellspacing="0"
+      style="width: 100%; text-align: center"
+    >
+      <tr>
+        <td>
+          <table
+            role="presentation"
+            cellpadding="0"
+            cellspacing="0"
+            style="
+              width: 600px;
+              margin: auto;
+              background-color: #ffffff;
+              border-radius: 0.5rem;
+              overflow: hidden;
+              box-shadow: 0 0 15px rgba(0, 0, 0, 0.05);
+            "
+          >
+            <!-- Top bar -->
+            <tr>
+              <td style="height: 6px; background-color: #002b80"></td>
+            </tr>
+
+            <!-- Content -->
+            <tr>
+              <td style="padding: 40px 30px; text-align: left">
+                <!-- Header -->
+                <div
+                  style="
+                    display: flex;
+                    align-items: center;
+                    font-size: 1.25rem;
+                    font-weight: 600;
+                    margin-bottom: 30px;
+                  "
+                >
+                  <img
+                    src="https://icons.veryicon.com/png/o/miscellaneous/test-2/reset-password-1.png"
+                    width="28"
+                    height="28"
+                    alt="Logo"
+                    style="margin-right: 10px"
+                  />
+                  GenBank
+                </div>
+
+                <!-- Title -->
+                <h2
+                  style="
+                    font-size: 1.75rem;
+                    font-weight: 700;
+                    margin: 0 0 20px 0;
+                    color: #111827;
+                  "
+                >
+                  ¡Tu depósito ha sido exitoso!
+                </h2>
+
+                <!-- Message -->
+                <p
+                  style="
+                    font-size: 1rem;
+                    line-height: 1.5rem;
+                    color: #374151;
+                    margin: 0 0 16px;
+                  "
+                >
+                  ¡Hola <strong>{{ user_name }}</strong>!<br />
+                  Te informamos que se ha realizado con éxito un
+                  <strong>depósito en tu cuenta corriente</strong> de
+                  <strong>GenBank</strong>.
+                </p>
+
+                <p
+                  style="
+                    font-size: 1rem;
+                    line-height: 1.5rem;
+                    color: #374151;
+                    margin: 0 0 16px;
+                  "
+                >
+                  Puedes revisar tu historial de movimientos y controlar tus
+                  finanzas desde tu panel personal.
+                </p>
+
+                <!-- Button -->
+                <p style="margin: 30px 0">
+                  <a
+                    href="{{ dashboard_link or '#' }}"
+                    style="
+                      display: inline-block;
+                      padding: 12px 24px;
+                      background-color: #002b80;
+                      color: #ffffff;
+                      text-decoration: none;
+                      border-radius: 0.375rem;
+                      font-weight: 600;
+                    "
+                  >
+                    📊 Ver mi cuenta
+                  </a>
+                </p>
+
+                <!-- Extra Info -->
+                <p
+                  style="
+                    font-size: 0.95rem;
+                    line-height: 1.5rem;
+                    color: #6b7280;
+                    margin-bottom: 20px;
+                  "
+                >
+                  Si tienes alguna duda, nuestro equipo de soporte está
+                  disponible para ayudarte en todo momento.
+                </p>
+
+                <!-- Divider -->
+                <hr
+                  style="
+                    border: none;
+                    border-top: 1px solid #e5e7eb;
+                    margin: 30px 0;
+                  "
+                />
+
+                <!-- Footer -->
+                <p style="font-size: 0.875rem; color: #9ca3af">
+                  Con cariño,<br />
+                  El equipo de <strong>GenBank</strong>
+                </p>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>
